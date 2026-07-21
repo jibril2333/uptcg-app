@@ -1,0 +1,137 @@
+{
+  "cardCount": 5,
+  "cards": [
+    {
+      "cardNo": "UAPR/BCV-1-039",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FBCV-1-039",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FBCV-1-039",
+      "imageFileName": "UAPR_BCV-1-039.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_BCV-1-039.png?v8",
+      "name": "フエゴレオン・ヴァーミリオン",
+      "workCode": "BCV",
+      "ap": "1",
+      "attributes": "紅蓮の獅子王",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "このキャラのBPが5000以上の場合、このキャラは [インパクト（1）] （アタックしてバトルに勝利した時、相手プレイヤーに1ダメージ）を得る。",
+      "generatedEnergy": [
+        "緑"
+      ],
+      "needEnergy": "緑4",
+      "product": "",
+      "rarity": "R",
+      "ruby": "ふえごれおん・ゔぁーみりおん",
+      "title": "ブラッククローバー",
+      "trigger": "[アクティブ] 自分の場のキャラを1枚選び、アクティブにし、このターン中、BP+3000。",
+      "image": "/cards/promo-bcv/UAPR_BCV-1-039.png"
+    },
+    {
+      "cardNo": "UAPR/BCV-1-056",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FBCV-1-056",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FBCV-1-056",
+      "imageFileName": "UAPR_BCV-1-056.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_BCV-1-056.png?v8",
+      "name": "ユノ",
+      "workCode": "BCV",
+      "ap": "1",
+      "attributes": "金色の夜明け",
+      "bp": "3000",
+      "category": "キャラクター",
+      "effect": "[ステップ] （自分の移動フェイズにフロントLからエナジーLへ移動できる）",
+      "generatedEnergy": [
+        "緑"
+      ],
+      "needEnergy": "緑2",
+      "product": "",
+      "rarity": "C",
+      "ruby": "ゆの",
+      "title": "ブラッククローバー",
+      "trigger": "[ドロー] カードを1枚引く。",
+      "image": "/cards/promo-bcv/UAPR_BCV-1-056.png"
+    },
+    {
+      "cardNo": "UAPR/BCV-1-074",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FBCV-1-074",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FBCV-1-074",
+      "imageFileName": "UAPR_BCV-1-074.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_BCV-1-074.png?v8",
+      "name": "アスタ",
+      "workCode": "BCV",
+      "ap": "1",
+      "attributes": "黒の暴牛",
+      "bp": "3000+",
+      "category": "キャラクター",
+      "effect": "このキャラの下に裏向きのカードがある場合、このキャラはBP+1000。",
+      "generatedEnergy": [
+        "赤赤"
+      ],
+      "needEnergy": "赤3",
+      "product": "",
+      "rarity": "U",
+      "ruby": "あすた",
+      "title": "ブラッククローバー",
+      "trigger": "-",
+      "image": "/cards/promo-bcv/UAPR_BCV-1-074.png"
+    },
+    {
+      "cardNo": "UAPR/BCV-1-075",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FBCV-1-075",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FBCV-1-075",
+      "imageFileName": "UAPR_BCV-1-075.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_BCV-1-075.png?v8",
+      "name": "アスタ",
+      "workCode": "BCV",
+      "ap": "1",
+      "attributes": "黒の暴牛",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アスタ〉アクティブにし、フロントLに移動できる [フロントLにある場合] 自分のターン開始時、『レイド状態のこのキャラの一番上のカードを場外に置く』。このキャラの下に裏向きのカードがある場合、『このキャラの下の裏向きのカードを1枚場外に置く』に代わる。 [登場時] BP4000以下の相手のフロントLのキャラを1枚まで選び、退場させる。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤5",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あすた",
+      "title": "ブラッククローバー",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-bcv/UAPR_BCV-1-075.png"
+    },
+    {
+      "cardNo": "UAPR/BCV-1-075",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FBCV-1-075_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FBCV-1-075_p1",
+      "imageFileName": "UAPR_BCV-1-075_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_BCV-1-075_p1.png?v8",
+      "name": "アスタ",
+      "workCode": "BCV",
+      "ap": "1",
+      "attributes": "黒の暴牛",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アスタ〉アクティブにし、フロントLに移動できる [フロントLにある場合] 自分のターン開始時、『レイド状態のこのキャラの一番上のカードを場外に置く』。このキャラの下に裏向きのカードがある場合、『このキャラの下の裏向きのカードを1枚場外に置く』に代わる。 [登場時] BP4000以下の相手のフロントLのキャラを1枚まで選び、退場させる。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤5",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あすた",
+      "title": "ブラッククローバー",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-bcv/UAPR_BCV-1-075_p1.png"
+    }
+  ],
+  "colors": [
+    "赤",
+    "緑"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-bcv",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-BCV",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "BCV"
+}

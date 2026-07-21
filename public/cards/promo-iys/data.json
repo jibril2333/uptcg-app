@@ -1,0 +1,113 @@
+{
+  "cardCount": 4,
+  "cards": [
+    {
+      "cardNo": "UAPR/IYS-1-006",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIYS-1-006",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIYS-1-006",
+      "imageFileName": "UAPR_IYS-1-006.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IYS-1-006.png?v8",
+      "name": "殺生丸",
+      "workCode": "IYS",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "3000+",
+      "category": "キャラクター",
+      "effect": "[インパクト無効] （このキャラとバトルをしたキャラはこのバトル中、インパクトを失う） [自分のターン中] このターン中に自分のキャラが場外から登場している場合、このキャラはBP+1000。",
+      "generatedEnergy": [
+        "紫紫"
+      ],
+      "needEnergy": "紫3",
+      "product": "",
+      "rarity": "U",
+      "ruby": "せっしょうまる",
+      "title": "犬夜叉",
+      "trigger": "-",
+      "image": "/cards/promo-iys/UAPR_IYS-1-006.png"
+    },
+    {
+      "cardNo": "UAPR/IYS-1-046",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIYS-1-046",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIYS-1-046",
+      "imageFileName": "UAPR_IYS-1-046.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IYS-1-046.png?v8",
+      "name": "犬夜叉",
+      "workCode": "IYS",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "4000+",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈犬夜叉〉アクティブにし、フロントLに移動できる [ターン1] このキャラのアタックがブロックされなかった時、カードを1枚引く。 [起動メイン] [ターン1] このターン中にこのキャラが自分の効果でアクティブからレストになったことがある場合のみ発動できる。このキャラをアクティブにし、このターン中、『BP+1000と [インパクト（1）] 』を得る。このキャラがこのターン中に登場していた場合、『 [2回アタック] 』に代えてもよい。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤4",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "いぬやしゃ",
+      "title": "犬夜叉",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-iys/UAPR_IYS-1-046.png"
+    },
+    {
+      "cardNo": "UAPR/IYS-1-046",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIYS-1-046_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIYS-1-046_p1",
+      "imageFileName": "UAPR_IYS-1-046_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IYS-1-046_p1.png?v8",
+      "name": "犬夜叉",
+      "workCode": "IYS",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "4000+",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈犬夜叉〉アクティブにし、フロントLに移動できる [ターン1] このキャラのアタックがブロックされなかった時、カードを1枚引く。 [起動メイン] [ターン1] このターン中にこのキャラが自分の効果でアクティブからレストになったことがある場合のみ発動できる。このキャラをアクティブにし、このターン中、『BP+1000と [インパクト（1）] 』を得る。このキャラがこのターン中に登場していた場合、『 [2回アタック] 』に代えてもよい。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤4",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "いぬやしゃ",
+      "title": "犬夜叉",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-iys/UAPR_IYS-1-046_p1.png"
+    },
+    {
+      "cardNo": "UAPR/IYS-1-063",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIYS-1-063",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIYS-1-063",
+      "imageFileName": "UAPR_IYS-1-063.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IYS-1-063.png?v8",
+      "name": "日暮 かごめ",
+      "workCode": "IYS",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] カードを1枚引き、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤-",
+      "product": "",
+      "rarity": "C",
+      "ruby": "ひぐらし かごめ",
+      "title": "犬夜叉",
+      "trigger": "[アクティブ] 自分の場のキャラを1枚選び、アクティブにし、このターン中、BP+3000。",
+      "image": "/cards/promo-iys/UAPR_IYS-1-063.png"
+    }
+  ],
+  "colors": [
+    "赤",
+    "紫"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-iys",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-IYS",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "IYS"
+}

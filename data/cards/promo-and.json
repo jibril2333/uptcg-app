@@ -1,0 +1,113 @@
+{
+  "cardCount": 4,
+  "cards": [
+    {
+      "cardNo": "UAPR/AND-1-006",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FAND-1-006",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FAND-1-006",
+      "imageFileName": "UAPR_AND-1-006.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_AND-1-006.png?v8",
+      "name": "ビリー",
+      "workCode": "AND",
+      "ap": "1",
+      "attributes": "UNDER",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] 自分の山札の上から3枚見る。その中から［特徴：UNDER］を1枚まで公開し手札に加える。残りを望む順で自分の山札の下に置く。手札に加えた場合、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫1",
+      "product": "",
+      "rarity": "C",
+      "ruby": "びりー",
+      "title": "アンデッドアンラック",
+      "trigger": "[カラー] 自分の場外から必要エナジーが2以下で消費APが1の紫のキャラカードを1枚自分のフロントLにアクティブで登場させる。",
+      "image": "/cards/promo-and/UAPR_AND-1-006.png"
+    },
+    {
+      "cardNo": "UAPR/AND-1-046",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FAND-1-046",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FAND-1-046",
+      "imageFileName": "UAPR_AND-1-046.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_AND-1-046.png?v8",
+      "name": "アンディ",
+      "workCode": "AND",
+      "ap": "1",
+      "attributes": "UNION",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アンディ〉アクティブにし、フロントLに移動できる [インパクト無効] （このキャラとバトルをしたキャラはこのバトル中、 [インパクト] を失う） [登場時] このキャラはこのターン中、 [インパクト（1）] （アタックしてバトルに勝利した時、相手プレイヤーに1ダメージ）を得る。 [退場時] このカードが必要エナジーを満たしている場合、このカードを自分の場のキャラにレイドさせてもよい。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤4",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あんでぃ",
+      "title": "アンデッドアンラック",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-and/UAPR_AND-1-046.png"
+    },
+    {
+      "cardNo": "UAPR/AND-1-046",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FAND-1-046_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FAND-1-046_p1",
+      "imageFileName": "UAPR_AND-1-046_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_AND-1-046_p1.png?v8",
+      "name": "アンディ",
+      "workCode": "AND",
+      "ap": "1",
+      "attributes": "UNION",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アンディ〉アクティブにし、フロントLに移動できる [インパクト無効] （このキャラとバトルをしたキャラはこのバトル中、 [インパクト] を失う） [登場時] このキャラはこのターン中、 [インパクト（1）] （アタックしてバトルに勝利した時、相手プレイヤーに1ダメージ）を得る。 [退場時] このカードが必要エナジーを満たしている場合、このカードを自分の場のキャラにレイドさせてもよい。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤4",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あんでぃ",
+      "title": "アンデッドアンラック",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-and/UAPR_AND-1-046_p1.png"
+    },
+    {
+      "cardNo": "UAPR/AND-1-047",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FAND-1-047",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FAND-1-047",
+      "imageFileName": "UAPR_AND-1-047.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_AND-1-047.png?v8",
+      "name": "出雲 風子",
+      "workCode": "AND",
+      "ap": "1",
+      "attributes": "UNION",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] カードを1枚引き、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "赤"
+      ],
+      "needEnergy": "赤-",
+      "product": "",
+      "rarity": "C",
+      "ruby": "いずも ふうこ",
+      "title": "アンデッドアンラック",
+      "trigger": "[アクティブ] 自分の場のキャラを1枚選び、アクティブにし、このターン中、BP+3000。",
+      "image": "/cards/promo-and/UAPR_AND-1-047.png"
+    }
+  ],
+  "colors": [
+    "赤",
+    "紫"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-and",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-AND",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "AND"
+}

@@ -1,0 +1,12 @@
+node_modules
+card-assets
+dist
+.git
+.github
+.vinext
+.wrangler
+work
+outputs
+tsconfig.tsbuildinfo
+npm-debug.log*
+.DS_Store

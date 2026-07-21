@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784115879768,
+      "tag": "0000_cute_trish_tilby",
+      "breakpoints": true
+    }
+  ]
+}

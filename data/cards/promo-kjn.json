@@ -1,0 +1,112 @@
+{
+  "cardCount": 4,
+  "cards": [
+    {
+      "cardNo": "UAPR/KJN-1-047",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FKJN-1-047",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FKJN-1-047",
+      "imageFileName": "UAPR_KJN-1-047.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_KJN-1-047.png?v8",
+      "name": "シャドウ",
+      "workCode": "KJN",
+      "ap": "1",
+      "attributes": "シャドウガーデン",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "このカードは〈シド・カゲノー〉としても扱う。 自分の場外にカードが10枚以上ある場合、このキャラは [インパクト無効] を得る。 [登場時] [フロントLにある場合] 自分の場外にカードが10枚以上ある場合、このキャラをアクティブにしてもよい。〈シド・カゲノー〉のこの効果は1ターンに1回のみ発動できる。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫4",
+      "product": "",
+      "rarity": "R",
+      "ruby": "しゃどう",
+      "title": "陰の実力者になりたくて！",
+      "trigger": "[カラー] 自分の場外から必要エナジーが2以下で消費APが1の紫のキャラカードを1枚自分のフロントLにアクティブで登場させる。",
+      "image": "/cards/promo-kjn/UAPR_KJN-1-047.png"
+    },
+    {
+      "cardNo": "UAPR/KJN-1-052",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FKJN-1-052",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FKJN-1-052",
+      "imageFileName": "UAPR_KJN-1-052.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_KJN-1-052.png?v8",
+      "name": "アルファ",
+      "workCode": "KJN",
+      "ap": "1",
+      "attributes": "シャドウガーデン／七陰",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] カードを1枚引き、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫-",
+      "product": "",
+      "rarity": "C",
+      "ruby": "あるふぁ",
+      "title": "陰の実力者になりたくて！",
+      "trigger": "[ドロー] カードを1枚引く。",
+      "image": "/cards/promo-kjn/UAPR_KJN-1-052.png"
+    },
+    {
+      "cardNo": "UAPR/KJN-1-056",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FKJN-1-056",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FKJN-1-056",
+      "imageFileName": "UAPR_KJN-1-056.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_KJN-1-056.png?v8",
+      "name": "アルファ",
+      "workCode": "KJN",
+      "ap": "1",
+      "attributes": "シャドウガーデン／七陰",
+      "bp": "4000+",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アルファ〉アクティブにし、フロントLに移動できる [登場時] 自分の山札の上から2枚を公開し、異なるカード名の［特徴：七陰］をそれぞれ1枚まで手札に加える。残りを場外に置く。 [起動メイン] [フロントLにある場合] 『このキャラはこのターン中、 [インパクト（1）] を得る』。自分の場に［特徴：七陰］のカード名が7種類以上ある場合、『自分の場の［特徴：七陰］を1枚選び、このターン中、BP+1000と [インパクト（1）] を与える』に代わる。〈アルファ〉のこの効果は1ターンに1回のみ発動できる。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫5",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あるふぁ",
+      "title": "陰の実力者になりたくて！",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-kjn/UAPR_KJN-1-056.png"
+    },
+    {
+      "cardNo": "UAPR/KJN-1-056",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FKJN-1-056_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FKJN-1-056_p1",
+      "imageFileName": "UAPR_KJN-1-056_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_KJN-1-056_p1.png?v8",
+      "name": "アルファ",
+      "workCode": "KJN",
+      "ap": "1",
+      "attributes": "シャドウガーデン／七陰",
+      "bp": "4000+",
+      "category": "キャラクター",
+      "effect": "[レイド] 〈アルファ〉アクティブにし、フロントLに移動できる [登場時] 自分の山札の上から2枚を公開し、異なるカード名の［特徴：七陰］をそれぞれ1枚まで手札に加える。残りを場外に置く。 [起動メイン] [フロントLにある場合] 『このキャラはこのターン中、 [インパクト（1）] を得る』。自分の場に［特徴：七陰］のカード名が7種類以上ある場合、『自分の場の［特徴：七陰］を1枚選び、このターン中、BP+1000と [インパクト（1）] を与える』に代わる。〈アルファ〉のこの効果は1ターンに1回のみ発動できる。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫5",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "あるふぁ",
+      "title": "陰の実力者になりたくて！",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-kjn/UAPR_KJN-1-056_p1.png"
+    }
+  ],
+  "colors": [
+    "紫"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-kjn",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-KJN",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "KJN"
+}

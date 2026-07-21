@@ -1,0 +1,136 @@
+{
+  "cardCount": 5,
+  "cards": [
+    {
+      "cardNo": "UAPR/CSM-1-008",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FCSM-1-008",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FCSM-1-008",
+      "imageFileName": "UAPR_CSM-1-008.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_CSM-1-008.png?v8",
+      "name": "デンジ",
+      "workCode": "CSM",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "3000",
+      "category": "キャラクター",
+      "effect": "[登場時] 自分の山札の上から3枚見て、キャラカードを1枚まで公開し手札に加える。残りを望む順で山札の下に置く。手札に加えた場合、自分の手札を1枚場外に置く。この効果で〈マキマ〉を手札に加えた場合、自分の場の他のキャラを1枚まで選び、このターン中、BP+1000。この効果で〈レゼ〉を手札に加えた場合、BP1500以上の相手のフロントLのキャラを1枚まで選び、このターン中、BP-1000。",
+      "generatedEnergy": [
+        "紫紫"
+      ],
+      "needEnergy": "紫3",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "でんじ",
+      "title": "チェンソーマン",
+      "trigger": "[ゲット] このカードを手札に加える。",
+      "image": "/cards/promo-csm/UAPR_CSM-1-008.png"
+    },
+    {
+      "cardNo": "UAPR/CSM-1-008",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FCSM-1-008_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FCSM-1-008_p1",
+      "imageFileName": "UAPR_CSM-1-008_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_CSM-1-008_p1.png?v8",
+      "name": "デンジ",
+      "workCode": "CSM",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "3000",
+      "category": "キャラクター",
+      "effect": "[登場時] 自分の山札の上から3枚見て、キャラカードを1枚まで公開し手札に加える。残りを望む順で山札の下に置く。手札に加えた場合、自分の手札を1枚場外に置く。この効果で〈マキマ〉を手札に加えた場合、自分の場の他のキャラを1枚まで選び、このターン中、BP+1000。この効果で〈レゼ〉を手札に加えた場合、BP1500以上の相手のフロントLのキャラを1枚まで選び、このターン中、BP-1000。",
+      "generatedEnergy": [
+        "紫紫"
+      ],
+      "needEnergy": "紫3",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "でんじ",
+      "title": "チェンソーマン",
+      "trigger": "[ゲット] このカードを手札に加える。",
+      "image": "/cards/promo-csm/UAPR_CSM-1-008_p1.png"
+    },
+    {
+      "cardNo": "UAPR/CSM-1-021",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FCSM-1-021",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FCSM-1-021",
+      "imageFileName": "UAPR_CSM-1-021.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_CSM-1-021.png?v8",
+      "name": "マキマ",
+      "workCode": "CSM",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] 自分の山札の上から3枚見て、1枚まで場外に置き、残りを望む順で山札の上に置く。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫1",
+      "product": "",
+      "rarity": "U",
+      "ruby": "まきま",
+      "title": "チェンソーマン",
+      "trigger": "[ドロー] カードを1枚引く。",
+      "image": "/cards/promo-csm/UAPR_CSM-1-021.png"
+    },
+    {
+      "cardNo": "UAPR/CSM-1-026",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FCSM-1-026",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FCSM-1-026",
+      "imageFileName": "UAPR_CSM-1-026.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_CSM-1-026.png?v8",
+      "name": "レゼ",
+      "workCode": "CSM",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "2000",
+      "category": "キャラクター",
+      "effect": "[登場時] カードを1枚引き、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫1",
+      "product": "",
+      "rarity": "C",
+      "ruby": "れぜ",
+      "title": "チェンソーマン",
+      "trigger": "[アクティブ] 自分の場のキャラを1枚選び、アクティブにし、このターン中、BP+3000。",
+      "image": "/cards/promo-csm/UAPR_CSM-1-026.png"
+    },
+    {
+      "cardNo": "UAPR/CSM-1-027",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FCSM-1-027",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FCSM-1-027",
+      "imageFileName": "UAPR_CSM-1-027.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_CSM-1-027.png?v8",
+      "name": "レゼ",
+      "workCode": "CSM",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "3000+",
+      "category": "キャラクター",
+      "effect": "[自分のターン中] このターン中に自分の場の〈デンジ〉が退場している場合、このキャラはBP+1000。",
+      "generatedEnergy": [
+        "紫"
+      ],
+      "needEnergy": "紫2",
+      "product": "",
+      "rarity": "C",
+      "ruby": "れぜ",
+      "title": "チェンソーマン",
+      "trigger": "-",
+      "image": "/cards/promo-csm/UAPR_CSM-1-027.png"
+    }
+  ],
+  "colors": [
+    "紫"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-csm",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-CSM",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "CSM"
+}

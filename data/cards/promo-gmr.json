@@ -1,0 +1,113 @@
+{
+  "cardCount": 4,
+  "cards": [
+    {
+      "cardNo": "UAPR/GMR-1-002",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FGMR-1-002",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FGMR-1-002",
+      "imageFileName": "UAPR_GMR-1-002.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_GMR-1-002.png?v8",
+      "name": "エミコ",
+      "workCode": "GMR",
+      "ap": "1",
+      "attributes": "-",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[退場時] 自分の山札の上から4枚見る。その中から［特徴：怪獣］を1枚まで公開し手札に加える。残りを望む順で自分の山札の下に置く。",
+      "generatedEnergy": [
+        "青"
+      ],
+      "needEnergy": "青1",
+      "product": "",
+      "rarity": "U",
+      "ruby": "えみこ",
+      "title": "GAMERA -Rebirth-",
+      "trigger": "-",
+      "image": "/cards/promo-gmr/UAPR_GMR-1-002.png"
+    },
+    {
+      "cardNo": "UAPR/GMR-1-048",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FGMR-1-048",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FGMR-1-048",
+      "imageFileName": "UAPR_GMR-1-048.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_GMR-1-048.png?v8",
+      "name": "ガメラ",
+      "workCode": "GMR",
+      "ap": "1",
+      "attributes": "怪獣",
+      "bp": "4000",
+      "category": "キャラクター",
+      "effect": "このカードはフロントLに登場できず、このカードの効果以外でフロントLに移動できない。 [エナジーLにある場合] 自分のキャラのアタック終了時、自分のフロントLのアクティブの［特徴：子供］を1枚選び、このキャラと位置を入れ替えてもよい。",
+      "generatedEnergy": [
+        "緑緑"
+      ],
+      "needEnergy": "緑3",
+      "product": "",
+      "rarity": "U",
+      "ruby": "がめら",
+      "title": "GAMERA -Rebirth-",
+      "trigger": "-",
+      "image": "/cards/promo-gmr/UAPR_GMR-1-048.png"
+    },
+    {
+      "cardNo": "UAPR/GMR-1-072",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FGMR-1-072",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FGMR-1-072",
+      "imageFileName": "UAPR_GMR-1-072.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_GMR-1-072.png?v8",
+      "name": "ガメラ",
+      "workCode": "GMR",
+      "ap": "1",
+      "attributes": "怪獣／陸",
+      "bp": "5000",
+      "category": "キャラクター",
+      "effect": "このカードが、［特徴：陸］にレイドする際、必要エナジーを [緑×2] 減らす。 [レイド] 〈ガメラ〉アクティブにし、フロントLに移動できる [フロントLにある場合] 自分の場の［特徴：子供］は相手の効果で選ばれない。 [インパクト（2）] （アタックしてバトルに勝利した時、相手プレイヤーに2ダメージ） 自分のフロントＬの［特徴：子供］1枚につき、このキャラは、 [ダメージ（+1）] （このキャラがアタックで直接ダメージを与える時、追加で1ダメージ）を得る。",
+      "generatedEnergy": [
+        "緑"
+      ],
+      "needEnergy": "緑10",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "がめら",
+      "title": "GAMERA -Rebirth-",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-gmr/UAPR_GMR-1-072.png"
+    },
+    {
+      "cardNo": "UAPR/GMR-1-072",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FGMR-1-072_p1",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FGMR-1-072_p1",
+      "imageFileName": "UAPR_GMR-1-072_p1.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_GMR-1-072_p1.png?v8",
+      "name": "ガメラ",
+      "workCode": "GMR",
+      "ap": "1",
+      "attributes": "怪獣／陸",
+      "bp": "5000",
+      "category": "キャラクター",
+      "effect": "このカードが、［特徴：陸］にレイドする際、必要エナジーを [緑×2] 減らす。 [レイド] 〈ガメラ〉アクティブにし、フロントLに移動できる [フロントLにある場合] 自分の場の［特徴：子供］は相手の効果で選ばれない。 [インパクト（2）] （アタックしてバトルに勝利した時、相手プレイヤーに2ダメージ） 自分のフロントＬの［特徴：子供］1枚につき、このキャラは、 [ダメージ（+1）] （このキャラがアタックで直接ダメージを与える時、追加で1ダメージ）を得る。",
+      "generatedEnergy": [
+        "緑"
+      ],
+      "needEnergy": "緑10",
+      "product": "",
+      "rarity": "UR",
+      "ruby": "がめら",
+      "title": "GAMERA -Rebirth-",
+      "trigger": "[レイド] このカードを手札に加えるか、必要エナジーを満たしている場合、レイドさせる。",
+      "image": "/cards/promo-gmr/UAPR_GMR-1-072_p1.png"
+    }
+  ],
+  "colors": [
+    "青",
+    "緑"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-gmr",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-GMR",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "GMR"
+}

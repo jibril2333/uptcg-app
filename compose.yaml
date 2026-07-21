@@ -1,0 +1,12 @@
+services:
+  uptcg:
+    image: ${UPTCG_IMAGE:-ghcr.io/jibril2333/uptcg-app:latest}
+    build: .
+    ports:
+      - "${UPTCG_PORT:-3000}:3000"
+    volumes:
+      - uptcg-database:/data
+    restart: unless-stopped
+
+volumes:
+  uptcg-database:

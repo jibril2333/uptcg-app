@@ -1,0 +1,65 @@
+{
+  "cardCount": 2,
+  "cards": [
+    {
+      "cardNo": "UAPR/IMC-1-027",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIMC-1-027",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIMC-1-027",
+      "imageFileName": "UAPR_IMC-1-027.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IMC-1-027.png?v8",
+      "name": "本田 未央",
+      "workCode": "IMC",
+      "ap": "1",
+      "attributes": "ポジティブパッション",
+      "bp": "2500",
+      "category": "キャラクター",
+      "effect": "自分の場に［特徴：ポジティブパッション］が4枚以上ある場合、このキャラの発生エナジー+ [黄] 。",
+      "generatedEnergy": [
+        "黄+"
+      ],
+      "needEnergy": "黄2",
+      "product": "",
+      "rarity": "U",
+      "ruby": "ほんだ みお",
+      "title": "アイドルマスター シンデレラガールズ",
+      "trigger": "-",
+      "image": "/cards/promo-imc/UAPR_IMC-1-027.png"
+    },
+    {
+      "cardNo": "UAPR/IMC-1-041",
+      "detailOfficialUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail.php?card_no=UAPR%2FIMC-1-041",
+      "detailSourceUrl": "https://www.unionarena-tcg.com/jp/cardlist/detail_iframe.php?card_no=UAPR%2FIMC-1-041",
+      "imageFileName": "UAPR_IMC-1-041.png",
+      "imageOfficialUrl": "https://www.unionarena-tcg.com/jp/images/cardlist/card/UAPR_IMC-1-041.png?v8",
+      "name": "渋谷 凛",
+      "workCode": "IMC",
+      "ap": "1",
+      "attributes": "ガールズ・イン・ザ・フロンティア",
+      "bp": "1500",
+      "category": "キャラクター",
+      "effect": "[登場時] 自分の山札の上から3枚見て、［特徴：ガールズ・イン・ザ・フロンティア］を1枚まで公開し手札に加える。残りを望む順で山札の下に置く。手札に加えた場合、自分の手札を1枚場外に置く。",
+      "generatedEnergy": [
+        "青"
+      ],
+      "needEnergy": "青1",
+      "product": "",
+      "rarity": "C",
+      "ruby": "しぶや りん",
+      "title": "アイドルマスター シンデレラガールズ",
+      "trigger": "[アクティブ] 自分の場のキャラを1枚選び、アクティブにし、このターン中、BP+3000。",
+      "image": "/cards/promo-imc/UAPR_IMC-1-041.png"
+    }
+  ],
+  "colors": [
+    "青",
+    "黄"
+  ],
+  "officialListUrl": "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+  "productKey": "promo-imc",
+  "productName": "プロモーションカード",
+  "seriesId": "570901-IMC",
+  "setCode": "PR",
+  "sourceSeriesId": "570901",
+  "syncedAt": "2026-07-15T17:47:14.525Z",
+  "workCode": "IMC"
+}
