@@ -78,13 +78,13 @@ docker run --rm -p 3000:3000 -v uptcg-database:/data uptcg-local
 
 ## GitHub Actions 与 GHCR
 
-推送到 `main` 或推送 `v*` 标签后，`.github/workflows/docker.yml` 会自动构建 `linux/amd64` 与 `linux/arm64` 镜像，并发布到：
+推送到 `main` 或推送 `v*` 标签后，`.github/workflows/docker.yml` 会在独立 Runner 上分别构建 `linux/amd64` 与 `linux/arm64` 镜像，再合并成一个多架构镜像并发布到：
 
 ```text
 ghcr.io/jibril2333/uptcg-app:latest
 ```
 
-卡图按分类打包在 `card-assets`，并使用 Git LFS 管理；GitHub Actions 会在构建前自动取回并解包完整卡图。普通克隆后如需在本地还原卡图，运行：
+卡图按分类打包在 `card-assets`，并使用 Git LFS 管理。Docker 构建时会从归档直接生成最终卡图层，不会把归档或重复卡图留在中间镜像里。普通克隆后如需在工作区还原卡图，运行：
 
 ```bash
 git lfs pull

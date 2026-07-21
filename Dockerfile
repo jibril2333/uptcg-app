@@ -1,10 +1,19 @@
+# syntax=docker/dockerfile:1
+
 FROM node:24-alpine AS build
 
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 
-COPY . .
+COPY .openai ./.openai
+COPY app ./app
+COPY build ./build
+COPY data ./data
+COPY db ./db
+COPY public ./public
+COPY worker ./worker
+COPY next.config.ts postcss.config.mjs tsconfig.json vite.config.ts ./
 RUN npm run build
 
 FROM node:24-alpine AS runtime
@@ -15,7 +24,16 @@ ENV UPTCG_DB_PATH=/data/uptcg.sqlite
 WORKDIR /app
 
 COPY --from=build --chown=node:node /app/dist ./dist
-COPY --from=build --chown=node:node /app/scripts/serve-local.mjs ./scripts/serve-local.mjs
+COPY --chown=node:node scripts/serve-local.mjs ./scripts/serve-local.mjs
+
+RUN --mount=type=bind,source=card-assets,target=/card-assets,readonly \
+  set -eu; \
+  for archive in /card-assets/*.tar; do \
+    series="${archive##*/}"; \
+    series="${series%.tar}"; \
+    mkdir -p "./dist/client/cards/${series}"; \
+    tar -xf "${archive}" -C "./dist/client/cards/${series}"; \
+  done
 
 RUN mkdir -p /data && chown node:node /data
 
