@@ -24,13 +24,24 @@ jobs:
       packages: write
 
     steps:
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          df -h /
+
       - name: Check out repository
         uses: actions/checkout@v6
         with:
           lfs: true
 
       - name: Restore card images
-        run: npm run assets:unpack
+        run: |
+          npm run assets:unpack
+          rm -rf card-assets .git/lfs/objects
+          df -h /
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
