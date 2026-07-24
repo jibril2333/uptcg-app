@@ -1,12 +1,20 @@
+name: uptcg
+
 services:
   uptcg:
-    image: ${UPTCG_IMAGE:-ghcr.io/jibril2333/uptcg-app:latest}
-    build: .
+    container_name: uptcg-app
+    image: ${UPTCG_IMAGE:-uptcg-app:prod}
+    build:
+      context: .
+    init: true
     ports:
-      - "${UPTCG_PORT:-3000}:3000"
+      - "${UPTCG_PORT:-3002}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      UPTCG_DB_PATH: /data/uptcg.sqlite
+    user: "${UPTCG_UID:-501}:${UPTCG_GID:-20}"
     volumes:
-      - uptcg-database:/data
+      - "${UPTCG_DATA_DIR:-./.docker-data}:/data"
     restart: unless-stopped
-
-volumes:
-  uptcg-database:
+    stop_grace_period: 20s

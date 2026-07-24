@@ -18,7 +18,7 @@ npm run build
 npm run start
 ```
 
-默认访问地址为 `http://localhost:3000`。
+默认开发地址为 `http://localhost:3000`。
 
 官方卡牌目录位于 `http://localhost:3000/cards`。当前已缓存 UNION ARENA 官方卡表中的 56 个作品、168 个分类数据组，共 10,265 张卡牌资料与本地卡图。宣传卡与限定商品卡会按卡号中的作品代码归入对应作品，通用 AP 卡单独归入“UNION ARENA 通用卡”。首页的每张系列卡会直接打开对应作品的卡表。
 
@@ -55,13 +55,17 @@ npm run dev -- --hostname 0.0.0.0
 
 ## Docker
 
-本地构建并启动：
+这台 Mac 上的生产容器使用端口 `3002`，并直接挂载原有 SQLite
+目录，保留牌组、收藏与置顶数据。手动构建并启动：
 
 ```bash
+UPTCG_DATA_DIR="$HOME/Library/Application Support/UPTCG/data" \
+UPTCG_UID="$(id -u)" \
+UPTCG_GID="$(id -g)" \
 docker compose up --build -d
 ```
 
-然后访问 `http://localhost:3000`。停止服务：
+然后访问 `http://localhost:3002`。停止服务：
 
 ```bash
 docker compose down
@@ -71,34 +75,56 @@ docker compose down
 
 ```bash
 docker build -t uptcg-local .
-docker run --rm -p 3000:3000 -v uptcg-database:/data uptcg-local
+docker run --rm -p 3002:3000 \
+  --user "$(id -u):$(id -g)" \
+  -v "$HOME/Library/Application Support/UPTCG/data:/data" \
+  uptcg-local
 ```
 
-容器把 SQLite 数据库保存在 `/data/uptcg.sqlite`。请始终为 `/data` 挂载持久卷，否则删除容器时会同时丢失牌组与收藏记录。
+容器把 SQLite 数据库保存在 `/data/uptcg.sqlite`。请始终为 `/data`
+挂载持久目录，否则删除容器时会同时丢失牌组与收藏记录。
 
-## GitHub Actions 与 GHCR
+## GitHub Actions 自动部署到这台 Mac
 
-推送到 `main` 或推送 `v*` 标签后，`.github/workflows/docker.yml` 会在独立 Runner 上分别构建 `linux/amd64` 与 `linux/arm64` 镜像，再合并成一个多架构镜像并发布到：
+仓库使用这台 Mac 上的 self-hosted runner：
 
 ```text
-ghcr.io/jibril2333/uptcg-app:latest
+名称：uptcg-mac-mini
+标签：self-hosted / macOS / ARM64 / uptcg
+目录：~/actions-runner-uptcg
 ```
 
-卡图按分类打包在 `card-assets`，并使用 Git LFS 管理。Docker 构建时会从归档直接生成最终卡图层，不会把归档或重复卡图留在中间镜像里。普通克隆后如需在工作区还原卡图，运行：
+每次推送 `main` 后，`.github/workflows/deploy.yml` 会自动：
+
+1. 在本机 runner 工作区检出代码与 Git LFS 卡图。
+2. 执行 `docker compose build` 构建 `uptcg-app:prod`。
+3. 停用原先直接运行 Node 的 `com.rayne.uptcg-local` LaunchAgent。
+4. 备份现有 SQLite 数据库并用新镜像重建容器。
+5. 检查 `http://127.0.0.1:3002/`，成功后清理悬空镜像。
+
+workflow 只接受 `push` 到 `main` 或手动触发，绝不能增加
+`pull_request` 触发器，否则不受信任的 PR 代码可能在这台 Mac 上执行。
+连续推送会排队部署，不会同时操作同一个容器。
+
+日常更新只需要：
+
+```bash
+git push origin main
+gh run watch
+```
+
+不再依赖 GHCR、SSH 或远程服务器。runner 作为用户级 LaunchAgent
+常驻并主动向 GitHub 拉取任务；Cloudflare Tunnel 继续访问本机的
+`3002` 端口。Docker Desktop 必须处于运行状态。
+
+卡图按分类打包在 `card-assets`，并使用 Git LFS 管理。Docker 构建时
+会从归档直接生成最终卡图层，不会把归档或重复卡图留在中间镜像里。
+普通克隆后如需在工作区还原卡图，运行：
 
 ```bash
 git lfs pull
 npm run assets:unpack
 ```
 
-更新本地卡图后，可用 `npm run assets:pack -- ua44bt` 重新打包指定分类，或用 `npm run assets:pack` 重新打包全部分类。
-
-在 Docker 主机上部署已发布镜像：
-
-```bash
-export UPTCG_IMAGE=ghcr.io/jibril2333/uptcg-app:latest
-docker compose pull
-docker compose up -d
-```
-
-镜像默认是私有的。首次拉取私有 GHCR 镜像前，需要先使用具有 `read:packages` 权限的 GitHub Token 执行 `docker login ghcr.io`。
+更新本地卡图后，可用 `npm run assets:pack -- ua44bt` 重新打包指定分类，
+或用 `npm run assets:pack` 重新打包全部分类。
