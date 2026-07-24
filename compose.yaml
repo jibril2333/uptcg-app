@@ -16,5 +16,12 @@ services:
     user: "${UPTCG_UID:-501}:${UPTCG_GID:-20}"
     volumes:
       - "${UPTCG_DATA_DIR:-./.docker-data}:/data"
+    labels:
+      homepage.group: 本地服务
+      homepage.name: UPTCG
+      homepage.icon: mdi-cards-playing-outline
+      homepage.href: http://localhost:3002
+      homepage.description: UNION ARENA 卡表、牌组与收藏管理
+      homepage.showStats: "true"
     restart: unless-stopped
     stop_grace_period: 20s
