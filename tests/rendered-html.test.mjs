@@ -101,10 +101,14 @@ test("server-renders the local card collection tracker", async () => {
   assert.match(html, /MY UNION ARENA COLLECTION/);
   assert.match(html, /记录你已经拥有的卡牌和数量/);
   assert.match(html, /资料保存在这台 Mac 的数据库中/);
-  assert.match(html, /选择作品/);
-  assert.match(html, /张全系列卡牌/);
-  assert.match(html, /只看已拥有/);
+  assert.match(html, /SELECT A SERIES/);
+  assert.match(html, /先选择作品/);
+  assert.match(html, /目前收录 <!-- -->56<!-- --> 个作品/);
+  assert.match(html, /新世紀福音戰士/);
+  assert.match(html, /無職轉生/);
+  assert.match(html, /已拥有 <!-- -->0<!-- --> 种 · <!-- -->0<!-- --> 张/);
   assert.match(html, /href="\/collection"/);
+  assert.doesNotMatch(html, /只看已拥有/);
   assert.doesNotMatch(html, /aria-label="卡牌产品"/);
 });
 

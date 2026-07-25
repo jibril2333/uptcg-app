@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { UaCard, UaWork } from "../cards/CardCatalog";
 import { loadCollection, storeCollectionEntry, type CollectionEntries, type CollectionEntry } from "./collection-storage";
 
+const EMPTY_DATASETS: UaWork["datasets"] = [];
+
 function unique(values: Array<string | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b, "ja"));
 }
@@ -13,8 +15,7 @@ function cardColor(card: UaCard) {
 }
 
 export function CollectionCatalog({ works }: { works: UaWork[] }) {
-  const firstWork = works[0];
-  const [activeWorkCode, setActiveWorkCode] = useState(firstWork?.code ?? "");
+  const [activeWorkCode, setActiveWorkCode] = useState("");
   const [cards, setCards] = useState<UaCard[]>([]);
   const [entries, setEntries] = useState<CollectionEntries>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -28,11 +29,20 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
   const [selected, setSelected] = useState<UaCard | null>(null);
   const cardCache = useRef(new Map<string, UaCard[]>());
 
-  const activeWork = works.find((work) => work.code === activeWorkCode) ?? firstWork;
-  const datasets = activeWork?.datasets ?? [];
-  const seriesCardCount = datasets.reduce((total, dataset) => total + dataset.cardCount, 0);
+  const activeWork = works.find((work) => work.code === activeWorkCode);
+  const datasets = activeWork?.datasets ?? EMPTY_DATASETS;
   const collectionItems = useMemo(() => Object.values(entries).filter((entry) => entry.count > 0), [entries]);
   const totalCopies = useMemo(() => collectionItems.reduce((total, entry) => total + entry.count, 0), [collectionItems]);
+  const collectionByWork = useMemo(() => {
+    const summaries = new Map<string, { copies: number; kinds: number }>();
+    for (const entry of collectionItems) {
+      const summary = summaries.get(entry.workCode) ?? { copies: 0, kinds: 0 };
+      summary.copies += entry.count;
+      summary.kinds += 1;
+      summaries.set(entry.workCode, summary);
+    }
+    return summaries;
+  }, [collectionItems]);
   const currentOwnedKinds = useMemo(() => cards.filter((card) => (entries[card.image]?.count || 0) > 0).length, [cards, entries]);
   const currentOwnedCopies = useMemo(() => cards.reduce((total, card) => total + (entries[card.image]?.count || 0), 0), [cards, entries]);
 
@@ -129,6 +139,16 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
     window.history.replaceState({}, "", url);
   };
 
+  const returnToWorks = () => {
+    setActiveWorkCode("");
+    setCards([]);
+    setSelected(null);
+    resetFilters();
+    const url = new URL(window.location.href);
+    url.searchParams.delete("series");
+    window.history.replaceState({}, "", url);
+  };
+
   const setCardCount = (card: UaCard, count: number) => {
     const nextCount = Math.max(0, Math.min(99, Number.isFinite(count) ? count : 0));
     const next = { ...entries };
@@ -166,19 +186,42 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
         </div>
       </header>
 
-      <section className="collection-catalog">
-        <div className="collection-navigation">
-          <label className="collection-work-select">
-            <span>选择作品</span>
-            <select value={activeWorkCode} onChange={(event) => selectWork(event.target.value)}>
-              {works.map((work) => <option key={work.code} value={work.code}>{work.name} · {work.code}</option>)}
-            </select>
-          </label>
-          <div className="collection-work-title">
-            {activeWork && <img src={activeWork.image} alt="" />}
-            <span><small>{activeWork?.code}</small><strong>{activeWork?.name}</strong></span>
+      <section className={`collection-catalog${activeWork ? "" : " collection-catalog--series"}`} aria-label={activeWork ? `${activeWork.name}收藏目录` : "收藏作品目录"}>
+        {!activeWork ? (
+          <div className="series-picker">
+            <div className="series-picker__heading">
+              <div>
+                <p>SELECT A SERIES</p>
+                <h2>先选择作品</h2>
+              </div>
+              <span>目前收录 {works.length} 个作品</span>
+            </div>
+            <div className="series-picker__grid">
+              {works.map((work) => {
+                const owned = collectionByWork.get(work.code) ?? { copies: 0, kinds: 0 };
+                return (
+                  <button className="series-choice" key={work.code} type="button" onClick={() => selectWork(work.code)} aria-label={`查看${work.name}收藏`}>
+                    <img src={work.image} alt="" />
+                    <span className="series-choice__shade" />
+                    <span className="series-choice__code">{work.code}</span>
+                    <span className="series-choice__meta">
+                      <strong>{work.name}</strong>
+                      <small>已拥有 {owned.kinds} 种 · {owned.copies} 张</small>
+                    </span>
+                    <span className="series-choice__arrow" aria-hidden="true">›</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="collection-series-total"><strong>{seriesCardCount}</strong><span>张全系列卡牌</span></div>
+        ) : (
+          <>
+        <div className="selected-series-bar">
+          <button type="button" onClick={returnToWorks} aria-label="返回作品选择">←</button>
+          <img src={activeWork.image} alt="" />
+          <span><small>{activeWork.code}</small><strong>{activeWork.name}</strong></span>
+          <p>{activeWork.originalName}</p>
+          <button className="selected-series-bar__change" type="button" onClick={returnToWorks}>切换作品</button>
         </div>
 
         {isLoading ? (
@@ -225,6 +268,8 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
             ) : (
               <div className="card-empty"><span>⌕</span><h2>{ownedOnly ? "这个系列还没有已拥有的卡牌" : "没有符合条件的卡牌"}</h2><p>{ownedOnly ? "取消“只看已拥有”后开始记录。" : "试试缩短关键词或清除筛选条件。"}</p></div>
             )}
+          </>
+        )}
           </>
         )}
       </section>
