@@ -23,7 +23,7 @@ jobs:
       - macOS
       - ARM64
       - uptcg
-    timeout-minutes: 60
+    timeout-minutes: 180
 
     env:
       UPTCG_DATA_DIR: /Users/rei/Library/Application Support/UPTCG/data
@@ -43,7 +43,6 @@ jobs:
         with:
           clean: true
           fetch-depth: 1
-          lfs: true
 
       - name: Build and deploy
         run: bash scripts/deploy-local.sh

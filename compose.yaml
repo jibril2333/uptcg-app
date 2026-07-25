@@ -13,15 +13,22 @@ services:
       NODE_ENV: production
       PORT: "3000"
       UPTCG_DB_PATH: /data/uptcg.sqlite
-    user: "${UPTCG_UID:-501}:${UPTCG_GID:-20}"
+      UPTCG_CARD_DATA_DIR: /data/card-data
+      UPTCG_CARD_ASSET_DIR: /data/card-assets
+    user: "${UPTCG_UID:-1000}:${UPTCG_GID:-1000}"
     volumes:
-      - "${UPTCG_DATA_DIR:-./.docker-data}:/data"
+      - "${UPTCG_DATA_DIR:-uptcg-data}:/data"
     labels:
       homepage.group: 本地服务
       homepage.name: UPTCG
       homepage.icon: mdi-cards-playing-outline
-      homepage.href: http://localhost:3002
+      homepage.href: "http://localhost:${UPTCG_PORT:-3002}"
       homepage.description: UNION ARENA 卡表、牌组与收藏管理
       homepage.showStats: "true"
+    healthcheck:
+      start_period: 2h
     restart: unless-stopped
     stop_grace_period: 20s
+
+volumes:
+  uptcg-data:

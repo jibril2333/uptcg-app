@@ -1,4 +1,6 @@
 node_modules
+card-assets
+data/cards
 public/cards
 dist
 .git

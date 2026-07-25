@@ -10,6 +10,8 @@ const clientRoot = path.join(root, "dist/client");
 const workerPath = path.join(root, "dist/server/index.js");
 const port = Number.parseInt(process.env.PORT || "3000", 10);
 const hostname = process.env.HOST || "0.0.0.0";
+const cardDataRoot = path.resolve(process.env.UPTCG_CARD_DATA_DIR || "/data/card-data");
+const cardAssetRoot = path.resolve(process.env.UPTCG_CARD_ASSET_DIR || "/data/card-assets");
 
 async function databasePath() {
   if (process.env.UPTCG_DB_PATH) return path.resolve(process.env.UPTCG_DB_PATH);
@@ -122,9 +124,13 @@ async function fetchAsset(request) {
     return new Response("Bad Request", { status: 400 });
   }
 
-  const relativePath = pathname.replace(/^\/+/, "");
-  const filePath = path.resolve(clientRoot, relativePath);
-  if (filePath !== clientRoot && !filePath.startsWith(`${clientRoot}${path.sep}`)) {
+  const isCardAsset = pathname.startsWith("/cards/");
+  const assetRoot = isCardAsset ? cardAssetRoot : clientRoot;
+  const relativePath = isCardAsset
+    ? pathname.slice("/cards/".length)
+    : pathname.replace(/^\/+/, "");
+  const filePath = path.resolve(assetRoot, relativePath);
+  if (filePath !== assetRoot && !filePath.startsWith(`${assetRoot}${path.sep}`)) {
     return new Response("Not Found", { status: 404 });
   }
 
@@ -136,6 +142,12 @@ async function fetchAsset(request) {
       "content-type": contentTypes.get(path.extname(filePath).toLowerCase()) || "application/octet-stream",
     });
     if (pathname.startsWith("/assets/")) headers.set("cache-control", "public, max-age=31536000, immutable");
+    if (isCardAsset && path.extname(filePath).toLowerCase() !== ".json") {
+      headers.set("cache-control", "public, max-age=86400");
+    }
+    if (isCardAsset && path.extname(filePath).toLowerCase() === ".json") {
+      headers.set("cache-control", "no-cache");
+    }
     return new Response(request.method === "HEAD" ? null : await readFile(filePath), { headers });
   } catch {
     return new Response("Not Found", { status: 404 });
@@ -147,6 +159,9 @@ const sqlite = new DatabaseSync(sqlitePath);
 sqlite.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000;");
 const d1 = createD1Database(sqlite);
 globalThis.__UPTCG_DB__ = d1;
+globalThis.__UPTCG_CARD_CATALOG__ = JSON.parse(
+  await readFile(path.join(cardDataRoot, "catalog.json"), "utf8"),
+);
 
 const { default: worker } = await import(pathToFileURL(workerPath).href);
 
@@ -199,6 +214,8 @@ const server = createServer(async (incoming, outgoing) => {
 server.listen(port, hostname, () => {
   console.log(`UPTCG local server listening on http://${hostname}:${port}`);
   console.log(`SQLite database: ${sqlitePath}`);
+  console.log(`Card data: ${cardDataRoot}`);
+  console.log(`Card images: ${cardAssetRoot}`);
 });
 
 function close() {

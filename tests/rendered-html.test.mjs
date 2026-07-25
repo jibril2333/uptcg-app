@@ -8,6 +8,9 @@ import { fileURLToPath } from "node:url";
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 
 async function render(pathname = "/") {
+  globalThis.__UPTCG_CARD_CATALOG__ = JSON.parse(
+    await readFile(path.join(projectRoot, "data/cards/catalog.json"), "utf8"),
+  );
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);

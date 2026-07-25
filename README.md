@@ -55,8 +55,30 @@ npm run dev -- --hostname 0.0.0.0
 
 ## Docker
 
-这台 Mac 上的生产容器使用端口 `3002`，并直接挂载原有 SQLite
-目录，保留牌组、收藏与置顶数据。手动构建并启动：
+Docker 镜像只包含应用程序，不包含卡牌资料或卡图。第一次启动时如果
+持久化卷里没有完整卡表，容器会自动从 UNION ARENA 官方卡表下载全部
+资料与图片；同步中断后重启容器会继续补齐。首次同步期间可查看进度：
+
+```bash
+docker compose up --build -d
+docker compose logs -f uptcg
+```
+
+同步完成后访问 `http://localhost:3002`。默认使用 Docker 命名卷
+`uptcg-data`，其中同时保存：
+
+- `/data/uptcg.sqlite`：牌组、收藏数量和置顶系列。
+- `/data/card-data`：官方卡牌 JSON 资料。
+- `/data/card-assets`：官方卡图。
+
+重建或升级容器会继续使用同一个卷。不要执行 `docker compose down -v`，
+否则会删除这些资料。普通停止服务：
+
+```bash
+docker compose down
+```
+
+这台 Mac 的自动部署继续使用宿主机目录，方便直接备份 SQLite 与卡表：
 
 ```bash
 UPTCG_DATA_DIR="$HOME/Library/Application Support/UPTCG/data" \
@@ -65,24 +87,8 @@ UPTCG_GID="$(id -g)" \
 docker compose up --build -d
 ```
 
-然后访问 `http://localhost:3002`。停止服务：
-
-```bash
-docker compose down
-```
-
-也可以直接构建镜像：
-
-```bash
-docker build -t uptcg-local .
-docker run --rm -p 3002:3000 \
-  --user "$(id -u):$(id -g)" \
-  -v "$HOME/Library/Application Support/UPTCG/data:/data" \
-  uptcg-local
-```
-
-容器把 SQLite 数据库保存在 `/data/uptcg.sqlite`。请始终为 `/data`
-挂载持久目录，否则删除容器时会同时丢失牌组与收藏记录。
+自动抓取只会在卡牌存储完全不存在、未完成或损坏时运行；正常重启不会
+重复访问官网。公开分发或长期运行前请自行确认官方卡图与文本的使用授权。
 
 ## GitHub Actions 自动部署到这台 Mac
 
@@ -96,8 +102,8 @@ docker run --rm -p 3002:3000 \
 
 每次推送 `main` 后，`.github/workflows/deploy.yml` 会自动：
 
-1. 在本机 runner 工作区检出代码与 Git LFS 卡图。
-2. 执行 `docker compose build` 构建 `uptcg-app:prod`。
+1. 在本机 runner 工作区检出应用代码。
+2. 执行 `docker compose build` 构建不含卡表和卡图的 `uptcg-app:prod`。
 3. 停用原先直接运行 Node 的 `com.rayne.uptcg-local` LaunchAgent。
 4. 备份现有 SQLite 数据库并用新镜像重建容器。
 5. 检查 `http://127.0.0.1:3002/`，成功后清理悬空镜像。
@@ -117,9 +123,9 @@ gh run watch
 常驻并主动向 GitHub 拉取任务；Cloudflare Tunnel 继续访问本机的
 `3002` 端口。Docker Desktop 必须处于运行状态。
 
-卡图按分类打包在 `card-assets`，并使用 Git LFS 管理。Docker 构建时
-会从归档直接生成最终卡图层，不会把归档或重复卡图留在中间镜像里。
-普通克隆后如需在工作区还原卡图，运行：
+源码工作区的开发快照仍按分类打包在 `card-assets`，并使用 Git LFS
+管理，但 Docker 构建会忽略这些归档以及 `data/cards`、`public/cards`，
+不会把任何卡牌资料写进镜像。普通克隆后如需在工作区还原开发快照，运行：
 
 ```bash
 git lfs pull

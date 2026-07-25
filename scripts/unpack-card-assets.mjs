@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 
 const root = path.resolve(import.meta.dirname, "..");
-const cardsRoot = path.join(root, "public/cards");
+const cardsRoot = path.resolve(process.env.UPTCG_CARD_ASSET_DIR || path.join(root, "public/cards"));
 const archiveRoot = path.join(root, "card-assets");
 const concurrency = Math.max(1, Math.min(8, Number(process.env.ASSET_JOBS) || 6));
 

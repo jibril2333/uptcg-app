@@ -48,7 +48,13 @@ fi
 echo "Recreating the UPTCG container on port $UPTCG_PORT..."
 docker compose up -d --force-recreate --remove-orphans uptcg
 
-for attempt in $(seq 1 60); do
+startup_timeout=60
+if [[ ! -f "$UPTCG_DATA_DIR/card-data/.sync-complete.json" ]]; then
+  startup_timeout=7200
+  echo "No complete card store is present. The container will download it from the official site before becoming ready."
+fi
+
+for attempt in $(seq 1 "$startup_timeout"); do
   if curl --fail --silent --show-error \
     --max-time 3 "http://127.0.0.1:${UPTCG_PORT}/" >/dev/null; then
     echo "UPTCG is healthy at http://127.0.0.1:${UPTCG_PORT}/"
@@ -56,10 +62,13 @@ for attempt in $(seq 1 60); do
     docker image prune --force
     exit 0
   fi
+  if (( attempt % 60 == 0 )); then
+    echo "Still waiting for UPTCG startup (${attempt}s); card sync progress is available in the container logs."
+  fi
   sleep 1
 done
 
-echo "UPTCG did not become healthy within 60 seconds." >&2
+echo "UPTCG did not become healthy within ${startup_timeout} seconds." >&2
 docker compose ps >&2
 docker compose logs --tail=150 uptcg >&2
 exit 1

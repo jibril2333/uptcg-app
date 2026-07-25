@@ -1,7 +1,7 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const OFFICIAL_ORIGIN = "https://www.unionarena-tcg.com";
+const OFFICIAL_ORIGIN = process.env.UPTCG_OFFICIAL_ORIGIN || "https://www.unionarena-tcg.com";
 const DEFAULT_SERIES = "570154";
 const MIXED_CARD_SERIES = new Set(["570801", "570901"]);
 const MIXED_SERIES_META = {
@@ -9,6 +9,9 @@ const MIXED_SERIES_META = {
   "570901": { key: "promo", setCode: "PR" },
 };
 const root = process.cwd();
+const configuredDataRoot = process.env.UPTCG_CARD_DATA_DIR;
+const dataRoot = path.resolve(configuredDataRoot || path.join(root, "data/cards"));
+const publicCardsRoot = path.resolve(process.env.UPTCG_CARD_ASSET_DIR || path.join(root, "public/cards"));
 
 const cliSeries = process.argv.find((arg) => arg.startsWith("--series="));
 const syncAll = process.argv.includes("--all");
@@ -210,7 +213,7 @@ function parseDetailPage(html, fallback) {
 
 async function loadCatalog() {
   try {
-    return JSON.parse(await readFile(path.join(root, "data/cards/catalog.json"), "utf8"));
+    return JSON.parse(await readFile(path.join(dataRoot, "catalog.json"), "utf8"));
   } catch {
     return { series: [] };
   }
@@ -218,13 +221,13 @@ async function loadCatalog() {
 
 async function saveCatalog(catalog) {
   catalog.syncedAt = new Date().toISOString();
-  await mkdir(path.join(root, "data/cards"), { recursive: true });
-  await writeFile(path.join(root, "data/cards/catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
+  await mkdir(dataRoot, { recursive: true });
+  await writeFile(path.join(dataRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
 }
 
 async function persistData(data, productKey) {
-  const dataPath = path.join(root, `data/cards/${productKey}.json`);
-  const publicDataPath = path.join(root, `public/cards/${productKey}/data.json`);
+  const dataPath = path.join(dataRoot, `${productKey}.json`);
+  const publicDataPath = path.join(publicCardsRoot, productKey, "data.json");
   await mkdir(path.dirname(dataPath), { recursive: true });
   await mkdir(path.dirname(publicDataPath), { recursive: true });
   const serialized = `${JSON.stringify(data, null, 2)}\n`;
@@ -236,7 +239,7 @@ function summaryFromData(data, productKey) {
   return {
     cardCount: data.cardCount,
     colors: data.colors || inferColors(data.cards),
-    dataFile: `data/cards/${productKey}.json`,
+    dataFile: configuredDataRoot ? `${productKey}.json` : `data/cards/${productKey}.json`,
     dataUrl: `/cards/${productKey}/data.json`,
     officialListUrl: data.officialListUrl,
     productKey,
@@ -247,6 +250,22 @@ function summaryFromData(data, productKey) {
     syncedAt: data.syncedAt,
     workCode: data.workCode || inferWorkCode(data.cards),
   };
+}
+
+function resolveDataFile(dataFile = "") {
+  if (configuredDataRoot) return path.join(dataRoot, path.basename(dataFile));
+  return path.resolve(root, dataFile);
+}
+
+async function hasCompleteAssets(data, productKey) {
+  try {
+    await access(path.join(publicCardsRoot, productKey, "data.json"));
+    await runPool(data.cards || [], 32, (card) =>
+      access(path.join(publicCardsRoot, productKey, card.imageFileName)));
+    return Boolean(data.cards?.length);
+  } catch {
+    return false;
+  }
 }
 
 function isMixedCatalogEntry(item, seriesId) {
@@ -260,10 +279,11 @@ async function reuseCachedMixedSeries(catalog, seriesId) {
   try {
     const summaries = [];
     for (const cached of cachedItems) {
-      const data = JSON.parse(await readFile(path.join(root, cached.dataFile), "utf8"));
+      const data = JSON.parse(await readFile(resolveDataFile(cached.dataFile), "utf8"));
       if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
       const workCode = data.workCode || inferWorkCode(data.cards);
       const { productKey, setCode } = mixedProductIdentity(seriesId, workCode);
+      if (!(await hasCompleteAssets(data, productKey))) return null;
       const normalized = {
         ...data,
         colors: data.colors || inferColors(data.cards),
@@ -286,9 +306,10 @@ async function reuseCachedSeries(catalog, seriesId) {
   const cached = catalog.series.find((item) => item.seriesId === seriesId);
   if (!cached?.dataFile) return null;
   try {
-    const data = JSON.parse(await readFile(path.join(root, cached.dataFile), "utf8"));
+    const data = JSON.parse(await readFile(resolveDataFile(cached.dataFile), "utf8"));
     if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
     const { productKey, setCode } = productIdentity(data.productName, data.cards[0], seriesId);
+    if (!(await hasCompleteAssets(data, productKey))) return null;
     const normalized = {
       ...data,
       colors: data.colors || inferColors(data.cards),
@@ -309,9 +330,9 @@ async function syncSeries(seriesId) {
   const listHtml = await fetchWithRetry(listUrl);
   const { cards: listCards, productName, resultCount } = parseListPage(listHtml, seriesId);
   const { productKey, setCode } = productIdentity(productName, listCards[0], seriesId);
-  const imageDirectory = path.join(root, "public/cards", productKey);
+  const imageDirectory = path.join(publicCardsRoot, productKey);
   await mkdir(imageDirectory, { recursive: true });
-  await mkdir(path.join(root, "data/cards"), { recursive: true });
+  await mkdir(dataRoot, { recursive: true });
 
   let detailProgress = 0;
   let imageProgress = 0;
@@ -381,7 +402,7 @@ async function syncMixedSeries(seriesId) {
 
   for (const workCode of new Set(groupedListCards.map((card) => card.workCode))) {
     const { productKey } = mixedProductIdentity(seriesId, workCode);
-    await mkdir(path.join(root, "public/cards", productKey), { recursive: true });
+    await mkdir(path.join(publicCardsRoot, productKey), { recursive: true });
   }
 
   let detailProgress = 0;
@@ -403,7 +424,7 @@ async function syncMixedSeries(seriesId) {
     }),
     runPool(groupedListCards, concurrency, async (card) => {
       const { productKey } = mixedProductIdentity(seriesId, card.workCode);
-      const destination = path.join(root, "public/cards", productKey, card.imageFileName);
+      const destination = path.join(publicCardsRoot, productKey, card.imageFileName);
       try {
         await access(destination);
       } catch {
