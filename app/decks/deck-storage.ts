@@ -2,6 +2,7 @@ import type { UaCard } from "../cards/CardCatalog";
 
 export const DECK_STORAGE_KEY = "uptcg-local-decks-v1";
 const DECK_MIGRATION_KEY = "uptcg-db-decks-migrated-v1";
+const DECK_RECOVERY_KEY = "uptcg-db-decks-recovered-v2";
 
 export type SavedDeckCard = {
   card: UaCard;
@@ -32,7 +33,7 @@ function cacheDecks(decks: SavedDeck[]) {
   window.localStorage.setItem(DECK_STORAGE_KEY, JSON.stringify(decks));
 }
 
-function mergeDecks(databaseDecks: SavedDeck[], localDecks: SavedDeck[]) {
+export function mergeDecks(databaseDecks: SavedDeck[], localDecks: SavedDeck[]) {
   const merged = new Map<string, SavedDeck>();
   for (const deck of [...databaseDecks, ...localDecks]) {
     const current = merged.get(deck.id);
@@ -62,11 +63,14 @@ async function loadDecksOnce(): Promise<SavedDeck[]> {
   const cached = loadCachedDecks();
   try {
     const databaseDecks = await fetchDecks();
-    if (window.localStorage.getItem(DECK_MIGRATION_KEY) !== "1") {
+    if (window.localStorage.getItem(DECK_RECOVERY_KEY) !== "1") {
       const merged = mergeDecks(databaseDecks, cached);
-      if (cached.length) await writeDecks(merged);
+      if (cached.length && JSON.stringify(merged) !== JSON.stringify(databaseDecks)) {
+        await writeDecks(merged);
+      }
       cacheDecks(merged);
       window.localStorage.setItem(DECK_MIGRATION_KEY, "1");
+      window.localStorage.setItem(DECK_RECOVERY_KEY, "1");
       return merged;
     }
     cacheDecks(databaseDecks);
