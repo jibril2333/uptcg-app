@@ -64,9 +64,13 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
   const [parallelOnly, setParallelOnly] = useState(false);
   const [selected, setSelected] = useState<UaCard | null>(null);
   const cardCache = useRef(new Map<string, UaCard[]>());
-  const selectedWork = works.find((work) => work.code === activeWork);
-  const datasets = selectedWork?.datasets ?? [];
-  const activeDataset = datasets.find((dataset) => dataset.productKey === activeProduct) ?? datasets[0];
+  const selectedWork = useMemo(() => works.find((work) => work.code === activeWork), [activeWork, works]);
+  const datasets = useMemo(() => selectedWork?.datasets ?? [], [selectedWork]);
+  const activeDataset = useMemo(
+    () => datasets.find((dataset) => dataset.productKey === activeProduct),
+    [activeProduct, datasets],
+  );
+  const officialListUrl = activeDataset?.officialListUrl ?? datasets[0]?.officialListUrl;
   const totalCards = works.reduce(
     (workTotal, work) => workTotal + work.datasets.reduce((total, dataset) => total + dataset.cardCount, 0),
     0,
@@ -93,12 +97,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
   };
 
   const selectDataset = (productKey: string) => {
-    if (productKey === activeDataset?.productKey) {
-      const cached = cardCache.current.get(productKey);
-      if (cached?.length) setCards(cached);
-      return;
-    }
-    setActiveProduct(productKey);
+    setActiveProduct(activeProduct === productKey ? "" : productKey);
     setCards([]);
     resetCatalog();
   };
@@ -122,35 +121,41 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
   }, [works]);
 
   useEffect(() => {
-    if (!activeDataset) {
+    if (!selectedWork || !datasets.length) {
       setCards([]);
       setIsLoading(false);
       return;
     }
 
-    const cached = cardCache.current.get(activeDataset.productKey);
-    if (cached) {
-      setCards(cached);
-      setLoadError("");
-      setIsLoading(false);
-      return;
-    }
-
     let cancelled = false;
+    const requestedDatasets = activeDataset ? [activeDataset] : datasets;
     setIsLoading(true);
     setLoadError("");
-    fetch(activeDataset.dataUrl)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json() as Promise<{ cards?: UaCard[] }>;
-      })
-      .then((data) => {
-        if (!data.cards?.length) throw new Error("卡牌数据为空");
-        cardCache.current.set(activeDataset.productKey, data.cards);
-        if (!cancelled) setCards(data.cards);
+
+    Promise.all(requestedDatasets.map(async (dataset) => {
+      const cached = cardCache.current.get(dataset.productKey);
+      if (cached) return cached;
+
+      const response = await fetch(dataset.dataUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json() as { cards?: UaCard[] };
+      if (!data.cards?.length) throw new Error("卡牌数据为空");
+      cardCache.current.set(dataset.productKey, data.cards);
+      return data.cards;
+    }))
+      .then((cardGroups) => {
+        const uniqueCards = new Map<string, UaCard>();
+        cardGroups.flat().forEach((card) => uniqueCards.set(card.image, card));
+        if (!cancelled) setCards([...uniqueCards.values()]);
       })
       .catch(() => {
-        if (!cancelled) setLoadError("暂时无法读取这个产品的本地卡牌资料，请重新选择后再试。");
+        if (!cancelled) {
+          setLoadError(
+            activeDataset
+              ? "暂时无法读取这个产品的本地卡牌资料，请重新选择后再试。"
+              : "暂时无法读取这个作品的全部卡牌资料，请重新选择后再试。",
+          );
+        }
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -159,7 +164,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
     return () => {
       cancelled = true;
     };
-  }, [activeDataset]);
+  }, [activeDataset, datasets, selectedWork]);
 
   const rarityOptions = useMemo(() => unique(cards.map((card) => card.rarity)), [cards]);
   const categoryOptions = useMemo(() => unique(cards.map((card) => card.category)), [cards]);
@@ -263,14 +268,14 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
           <div className="card-toolbar__products">
             <div className="card-toolbar__products-head">
               <span>卡牌产品</span>
-              {activeDataset && <a href={activeDataset.officialListUrl} target="_blank" rel="noreferrer">官方卡表 ↗</a>}
+              {officialListUrl && <a href={officialListUrl} target="_blank" rel="noreferrer">官方卡表 ↗</a>}
             </div>
-            <div className="card-product-tabs" role="tablist" aria-label="卡牌产品">
+            <div className="card-product-tabs" role="tablist" aria-label="卡牌产品；再次点击已选产品可显示全系列">
               {datasets.map((dataset) => (
                 <button
                   className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""}
                   key={dataset.productKey}
-                  title={dataset.productName}
+                  title={dataset.productKey === activeDataset?.productKey ? `${dataset.productName}（再次点击显示全系列）` : dataset.productName}
                   type="button"
                   role="tab"
                   aria-selected={dataset.productKey === activeDataset?.productKey}
@@ -317,13 +322,13 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
         </div>
 
         {isLoading ? (
-          <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode} 卡牌资料…</p></div>
+          <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode ?? `${selectedWork.name}全系列`} 卡牌资料…</p></div>
         ) : loadError ? (
           <div className="card-empty"><span>!</span><h2>卡牌资料读取失败</h2><p>{loadError}</p></div>
         ) : (
           <>
         <div className="card-results-heading">
-          <p><span>{activeDataset?.setCode}</span> · 显示 <strong>{filteredCards.length}</strong> / {cards.length} 张</p>
+          <p><span>{activeDataset?.setCode ?? `${selectedWork.code} 全系列`}</span> · 显示 <strong>{filteredCards.length}</strong> / {cards.length} 张</p>
           {(query || rarity !== "all" || color !== "all" || category !== "all" || parallelOnly) && (
             <button type="button" onClick={() => { setQuery(""); setRarity("all"); setColor("all"); setCategory("all"); setParallelOnly(false); }}>清除筛选</button>
           )}
