@@ -1,16 +1,77 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
 
-const projectRoot = fileURLToPath(new URL("../", import.meta.url));
+const syncedAt = "2026-07-15T17:47:14.525Z";
+const catalog = {
+  syncedAt,
+  series: [
+    {
+      cardCount: 27,
+      colors: ["赤", "黄", "紫"],
+      dataUrl: "/cards/ua44st/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570044",
+      productKey: "ua44st",
+      productName: "ヱヴァンゲリヲン新劇場版【UA44ST】",
+      seriesId: "570044",
+      setCode: "UA44ST",
+      syncedAt,
+      workCode: "EVA",
+    },
+    {
+      cardCount: 136,
+      colors: ["赤", "黄", "紫"],
+      dataUrl: "/cards/ua44bt/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570144",
+      productKey: "ua44bt",
+      productName: "ヱヴァンゲリヲン新劇場版【UA44BT】",
+      seriesId: "570144",
+      setCode: "UA44BT",
+      syncedAt,
+      workCode: "EVA",
+    },
+    {
+      cardCount: 120,
+      colors: ["青", "緑"],
+      dataUrl: "/cards/ua54bt/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570154",
+      productKey: "ua54bt",
+      productName: "無職転生 ～異世界行ったら本気だす～【UA54BT】",
+      seriesId: "570154",
+      setCode: "UA54BT",
+      syncedAt,
+      workCode: "MST",
+    },
+    {
+      cardCount: 10,
+      colors: ["赤", "黄"],
+      dataUrl: "/cards/promo-eva/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+      productKey: "promo-eva",
+      productName: "プロモーションカード",
+      seriesId: "570901-EVA",
+      setCode: "PR",
+      sourceSeriesId: "570901",
+      syncedAt,
+      workCode: "EVA",
+    },
+    {
+      cardCount: 2,
+      colors: ["青", "緑"],
+      dataUrl: "/cards/promo-mst/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570901",
+      productKey: "promo-mst",
+      productName: "プロモーションカード",
+      seriesId: "570901-MST",
+      setCode: "PR",
+      sourceSeriesId: "570901",
+      syncedAt,
+      workCode: "MST",
+    },
+  ],
+};
 
 async function render(pathname = "/") {
-  globalThis.__UPTCG_CARD_CATALOG__ = JSON.parse(
-    await readFile(path.join(projectRoot, "data/cards/catalog.json"), "utf8"),
-  );
+  globalThis.__UPTCG_CARD_CATALOG__ = catalog;
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -37,7 +98,9 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.match(html, /href="\/cards\?series=MST"/);
   assert.match(html, /href="\/cards\?series=EVA"/);
   assert.match(html, /href="\/collection"/);
+  assert.match(html, /href="\/rules"/);
   assert.match(html, /我的收集/);
+  assert.match(html, /規則與禁卡/);
   assert.doesNotMatch(html, /Tier 表|上位卡表|模擬器|玩家社群/);
   assert.doesNotMatch(html, /WHY UPTCG|為什麼選擇 UPTCG|全系列中文翻譯|智慧組牌系統/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|火焰樹|貓貓TCG/);
@@ -53,36 +116,31 @@ test("server-renders the locally cached official card catalog", async () => {
   assert.match(html, /新世紀福音戰士/);
   assert.match(html, /無職轉生/);
   assert.match(html, /目前收录/);
-  assert.match(html, /<strong>56<\/strong> 个作品/);
-  assert.match(html, /<strong>10265<\/strong> 张卡牌/);
+  assert.match(html, /<strong>2<\/strong> 个作品/);
+  assert.match(html, /<strong>295<\/strong> 张卡牌/);
   assert.match(html, /3<!-- --> 个产品 · <!-- -->173<!-- --> 张卡牌/);
   assert.match(html, /2<!-- --> 个产品 · <!-- -->122<!-- --> 张卡牌/);
-  assert.match(html, /偶像大師 灰姑娘女孩/);
-  assert.match(html, /UNION ARENA 通用卡/);
   assert.match(html, /\/assets\/series\/EVA\.jpg/);
   assert.match(html, /UNION ARENA 官方卡表/);
 });
 
-test("all official series products have complete local data and images", async () => {
-  const catalog = JSON.parse(await readFile(path.join(projectRoot, "data/cards/catalog.json"), "utf8"));
-  assert.equal(catalog.series.length, 168);
-  assert.equal(new Set(catalog.series.map((product) => product.workCode)).size, 56);
-  assert.equal(catalog.series.filter((product) => product.sourceSeriesId).length, 59);
+test("server-renders the official rules and current restriction table", async () => {
+  const response = await render("/rules");
+  assert.equal(response.status, 200);
 
-  let cardCount = 0;
-  for (const product of catalog.series) {
-    assert.ok(Array.isArray(product.colors), product.setCode);
-    const data = JSON.parse(await readFile(path.join(projectRoot, product.dataFile), "utf8"));
-    assert.equal(data.cards.length, product.cardCount, product.setCode);
-    assert.equal(data.workCode, product.workCode, product.setCode);
-    assert.ok(existsSync(path.join(projectRoot, "public", product.dataUrl)), product.dataUrl);
-    for (const card of data.cards) {
-      assert.ok(existsSync(path.join(projectRoot, "public", card.image)), card.image);
-    }
-    cardCount += data.cards.length;
-  }
-
-  assert.equal(cardCount, 10265);
+  const html = await response.text();
+  assert.match(html, /<title>規則與禁卡表｜UPTCG<\/title>/);
+  assert.match(html, /牌组构筑规则/);
+  assert.match(html, /主牌组张数/);
+  assert.match(html, /现行禁限卡表/);
+  assert.match(html, /EVA-1-051/);
+  assert.match(html, /EVA-1-004/);
+  assert.match(html, /CGH-1-083/);
+  assert.match(html, /CGD-1-070/);
+  assert.match(html, /限制 2 张/);
+  assert.match(html, /SAO-2-029/);
+  assert.match(html, /2026\.04\.01/);
+  assert.match(html, /核对官方原文/);
 });
 
 test("server-renders the local deck library", async () => {
@@ -106,7 +164,7 @@ test("server-renders the local card collection tracker", async () => {
   assert.match(html, /资料保存在这台 Mac 的数据库中/);
   assert.match(html, /SELECT A SERIES/);
   assert.match(html, /先选择作品/);
-  assert.match(html, /目前收录 <!-- -->56<!-- --> 个作品/);
+  assert.match(html, /目前收录 <!-- -->2<!-- --> 个作品/);
   assert.match(html, /新世紀福音戰士/);
   assert.match(html, /無職轉生/);
   assert.match(html, /已拥有 <!-- -->0<!-- --> 种 · <!-- -->0<!-- --> 张/);

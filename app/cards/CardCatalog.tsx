@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 export type UaCard = {
   ap?: string;
@@ -67,6 +67,11 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
   const selectedWork = works.find((work) => work.code === activeWork);
   const datasets = selectedWork?.datasets ?? [];
   const activeDataset = datasets.find((dataset) => dataset.productKey === activeProduct) ?? datasets[0];
+  const totalCards = works.reduce(
+    (workTotal, work) => workTotal + work.datasets.reduce((total, dataset) => total + dataset.cardCount, 0),
+    0,
+  );
+  const selectedCardTotal = datasets.reduce((total, dataset) => total + dataset.cardCount, 0);
 
   const resetCatalog = () => {
     setQuery("");
@@ -188,6 +193,42 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
 
   return (
     <>
+      <header
+        className={`series-library__header catalog-context-hero${selectedWork ? " is-series" : ""}`}
+        data-series-code={selectedWork?.code}
+        style={selectedWork ? { "--catalog-series-cover": `url("${selectedWork.image}")` } as CSSProperties : undefined}
+      >
+        <div>
+          {selectedWork ? (
+            <>
+              <button className="catalog-hero-back" type="button" onClick={returnToWorks}>← 所有作品</button>
+              <p className="series-library__kicker">{selectedWork.code} · UNION ARENA CARD LIST</p>
+              <h1>{selectedWork.name}</h1>
+              <p>{selectedWork.originalName}</p>
+            </>
+          ) : (
+            <>
+              <p className="series-library__kicker">UNION ARENA CARD LIST</p>
+              <h1>系列卡表</h1>
+              <p>选择作品后查看已收录的官方产品、卡牌资料与高清卡图。</p>
+            </>
+          )}
+        </div>
+        <div className="series-library__summary" aria-label={selectedWork ? "当前作品统计" : "资料库统计"}>
+          {selectedWork ? (
+            <>
+              <span><strong>{datasets.length}</strong> 个产品</span>
+              <span><strong>{selectedCardTotal}</strong> 张卡牌</span>
+            </>
+          ) : (
+            <>
+              <span><strong>{works.length}</strong> 个作品</span>
+              <span><strong>{totalCards}</strong> 张卡牌</span>
+            </>
+          )}
+        </div>
+      </header>
+
       <section className={`card-catalog${selectedWork ? "" : " card-catalog--series"}`} aria-label={selectedWork ? `${selectedWork.name}卡牌目录` : "作品目录"}>
         {!selectedWork ? (
           <div className="series-picker">
@@ -218,47 +259,35 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
           </div>
         ) : (
           <>
-        <div className="selected-series-bar">
-          <button type="button" onClick={returnToWorks} aria-label="返回作品选择">←</button>
-          <img src={selectedWork.image} alt="" />
-          <span><small>{selectedWork.code}</small><strong>{selectedWork.name}</strong></span>
-          <p>{selectedWork.originalName}</p>
-          <button className="selected-series-bar__change" type="button" onClick={returnToWorks}>切换作品</button>
-        </div>
-
-        <div className="card-product-switcher">
-          <div className="card-product-switcher__heading">
-            <p>选择卡牌产品</p>
-            <strong>{activeDataset?.productName}</strong>
+        <div className="card-toolbar">
+          <div className="card-toolbar__products">
+            <div className="card-toolbar__products-head">
+              <span>卡牌产品</span>
+              {activeDataset && <a href={activeDataset.officialListUrl} target="_blank" rel="noreferrer">官方卡表 ↗</a>}
+            </div>
+            <div className="card-product-tabs" role="tablist" aria-label="卡牌产品">
+              {datasets.map((dataset) => (
+                <button
+                  className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""}
+                  key={dataset.productKey}
+                  title={dataset.productName}
+                  type="button"
+                  role="tab"
+                  aria-selected={dataset.productKey === activeDataset?.productKey}
+                  onClick={() => selectDataset(dataset.productKey)}
+                >
+                  <strong>{dataset.setCode}</strong>
+                  <span>{dataset.cardCount} 张</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="card-product-tabs" role="tablist" aria-label="卡牌产品">
-            {datasets.map((dataset) => (
-              <button
-                className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""}
-                key={dataset.productKey}
-                type="button"
-                role="tab"
-                aria-selected={dataset.productKey === activeDataset?.productKey}
-                onClick={() => selectDataset(dataset.productKey)}
-              >
-                <strong>{dataset.setCode}</strong>
-                <span>{dataset.cardCount} 张</span>
-              </button>
-            ))}
-          </div>
-          {activeDataset && <a href={activeDataset.officialListUrl} target="_blank" rel="noreferrer">官方卡表 ↗</a>}
-        </div>
-
-        {isLoading ? (
-          <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode} 卡牌资料…</p></div>
-        ) : loadError ? (
-          <div className="card-empty"><span>!</span><h2>卡牌资料读取失败</h2><p>{loadError}</p></div>
-        ) : (
-          <>
-        <div className="card-filters">
           <label className="card-search">
-            <span>搜索卡名、编号或效果</span>
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={cards[0] ? `例如：${cards[0].name} / ${cards[0].cardNo}` : "输入关键词"} />
+            <span>搜索卡牌</span>
+            <span className="card-search__field">
+              <i aria-hidden="true">⌕</i>
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={cards[0] ? `例如：${cards[0].name} / ${cards[0].cardNo}` : "输入关键词"} />
+            </span>
           </label>
           <label>
             <span>稀有度</span>
@@ -283,10 +312,16 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
           </label>
           <label className="parallel-filter">
             <input type="checkbox" checked={parallelOnly} onChange={(event) => setParallelOnly(event.target.checked)} />
-            <span>仅显示平行卡</span>
+            <span>仅看平行卡</span>
           </label>
         </div>
 
+        {isLoading ? (
+          <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode} 卡牌资料…</p></div>
+        ) : loadError ? (
+          <div className="card-empty"><span>!</span><h2>卡牌资料读取失败</h2><p>{loadError}</p></div>
+        ) : (
+          <>
         <div className="card-results-heading">
           <p><span>{activeDataset?.setCode}</span> · 显示 <strong>{filteredCards.length}</strong> / {cards.length} 张</p>
           {(query || rarity !== "all" || color !== "all" || category !== "all" || parallelOnly) && (

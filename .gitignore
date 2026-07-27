@@ -42,5 +42,7 @@ next-env.d.ts
 /outputs/
 /work/
 /scripts/com.rayne.uptcg-local.plist
-/public/cards/**/*.png
+/card-assets/
+/data/cards/
+/public/cards/
 tsconfig.tsbuildinfo

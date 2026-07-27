@@ -45,7 +45,11 @@ npm run sync:cards -- --series=570154
 npm run sync:cards -- --series=570044,570144,570154
 ```
 
-同步内容会写入 `data/cards`，供页面按需读取的资料与图片会缓存在 `public/cards/<分类编号>`。混合宣传卡与限定商品卡池会自动按作品代码拆分。公开部署前请自行确认官方卡图与文本的转载授权范围。
+直接运行同步命令时，资料会写入被 Git 忽略的 `data/cards`，图片会缓存到
+`public/cards/<分类编号>`。Docker 首次启动则会把同样的内容写入持久化
+卷中的 `/data/card-data` 与 `/data/card-assets`。混合宣传卡与限定商品
+卡池会自动按作品代码拆分。公开部署前请自行确认官方卡图与文本的转载
+授权范围。
 
 如果要让同一局域网内的其他设备访问开发版：
 
@@ -123,14 +127,6 @@ gh run watch
 常驻并主动向 GitHub 拉取任务；Cloudflare Tunnel 继续访问本机的
 `3002` 端口。Docker Desktop 必须处于运行状态。
 
-源码工作区的开发快照仍按分类打包在 `card-assets`，并使用 Git LFS
-管理，但 Docker 构建会忽略这些归档以及 `data/cards`、`public/cards`，
-不会把任何卡牌资料写进镜像。普通克隆后如需在工作区还原开发快照，运行：
-
-```bash
-git lfs pull
-npm run assets:unpack
-```
-
-更新本地卡图后，可用 `npm run assets:pack -- ua44bt` 重新打包指定分类，
-或用 `npm run assets:pack` 重新打包全部分类。
+仓库不保存卡牌 JSON、卡图或卡图归档。普通克隆和 Docker 镜像都只包含
+应用代码；首次启动会从官方卡表建立持久化卡牌资料，源码目录中的手动同步
+缓存也会被 Git 忽略。

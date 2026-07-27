@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { UaCard, UaWork } from "../cards/CardCatalog";
 import { loadCollection, storeCollectionEntry, type CollectionEntries, type CollectionEntry } from "./collection-storage";
 
@@ -43,6 +43,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
     }
     return summaries;
   }, [collectionItems]);
+  const activeWorkOwned = collectionByWork.get(activeWorkCode) ?? { copies: 0, kinds: 0 };
   const currentOwnedKinds = useMemo(() => cards.filter((card) => (entries[card.image]?.count || 0) > 0).length, [cards, entries]);
   const currentOwnedCopies = useMemo(() => cards.reduce((total, card) => total + (entries[card.image]?.count || 0), 0), [cards, entries]);
 
@@ -174,15 +175,30 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
 
   return (
     <>
-      <header className="collection-hero">
+      <header
+        className={`collection-hero catalog-context-hero${activeWork ? " is-series" : ""}`}
+        data-series-code={activeWork?.code}
+        style={activeWork ? { "--catalog-series-cover": `url("${activeWork.image}")` } as CSSProperties : undefined}
+      >
         <div>
-          <p>MY UNION ARENA COLLECTION</p>
-          <h1>我的收集</h1>
-          <span>记录你已经拥有的卡牌和数量，资料保存在这台 Mac 的数据库中。</span>
+          {activeWork ? (
+            <>
+              <button className="catalog-hero-back" type="button" onClick={returnToWorks}>← 所有作品</button>
+              <p>{activeWork.code} · MY UNION ARENA COLLECTION</p>
+              <h1>{activeWork.name}</h1>
+              <span>{activeWork.originalName}</span>
+            </>
+          ) : (
+            <>
+              <p>MY UNION ARENA COLLECTION</p>
+              <h1>我的收集</h1>
+              <span>记录你已经拥有的卡牌和数量，资料保存在这台 Mac 的数据库中。</span>
+            </>
+          )}
         </div>
-        <div className="collection-summary" aria-label="收集统计">
-          <span><strong>{collectionItems.length}</strong><small>种卡牌</small></span>
-          <span><strong>{totalCopies}</strong><small>张总数</small></span>
+        <div className="collection-summary" aria-label={activeWork ? "当前作品收集统计" : "收集统计"}>
+          <span><strong>{activeWork ? activeWorkOwned.kinds : collectionItems.length}</strong><small>{activeWork ? "本作种类" : "种卡牌"}</small></span>
+          <span><strong>{activeWork ? activeWorkOwned.copies : totalCopies}</strong><small>{activeWork ? "本作张数" : "张总数"}</small></span>
         </div>
       </header>
 
@@ -216,14 +232,6 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
           </div>
         ) : (
           <>
-        <div className="selected-series-bar">
-          <button type="button" onClick={returnToWorks} aria-label="返回作品选择">←</button>
-          <img src={activeWork.image} alt="" />
-          <span><small>{activeWork.code}</small><strong>{activeWork.name}</strong></span>
-          <p>{activeWork.originalName}</p>
-          <button className="selected-series-bar__change" type="button" onClick={returnToWorks}>切换作品</button>
-        </div>
-
         {isLoading ? (
           <div className="card-loading" role="status"><span /><p>正在读取 {activeWork?.name} 全系列卡牌资料…</p></div>
         ) : loadError ? (
