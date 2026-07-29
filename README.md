@@ -130,3 +130,8 @@ gh run watch
 仓库不保存卡牌 JSON、卡图或卡图归档。普通克隆和 Docker 镜像都只包含
 应用代码；首次启动会从官方卡表建立持久化卡牌资料，源码目录中的手动同步
 缓存也会被 Git 忽略。
+
+## Linear → Codex 开发
+
+通过 Linear Issue 委派 Codex Cloud、运行 PR 检查并由人工审核合并的配置，
+请参阅 [Linear → Codex → Pull Request](docs/linear-codex-setup.md)。

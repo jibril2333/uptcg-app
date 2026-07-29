@@ -1,0 +1,35 @@
+name: Pull request checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # Pull request code must run only on a GitHub-hosted runner. Never change
+    # this job to use the repository's self-hosted `uptcg` runner.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - run: npm ci
+      - name: Lint (informational until the existing baseline is fixed)
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Build and test
+        run: npm test
