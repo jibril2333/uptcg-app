@@ -90,7 +90,6 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
 
   const html = await response.text();
   assert.match(html, /<title>UPTCG｜Union Arena 中文組牌工具<\/title>/i);
-  assert.match(html, /最強大的中文組牌神器/);
   assert.match(html, /我的置顶/);
   assert.match(html, /所有系列/);
   assert.match(html, /共 <!-- -->56<!-- --> 个作品/);
@@ -101,6 +100,8 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.match(html, /href="\/rules"/);
   assert.match(html, /我的收集/);
   assert.match(html, /規則與禁卡/);
+  assert.doesNotMatch(html, /最強大的中文組牌神器|即時翻譯|登入 Google/);
+  assert.doesNotMatch(html, /UPTCG 由熱愛|UPTCG 資料庫|關於我們|免責聲明|隱私政策|服務條款/);
   assert.doesNotMatch(html, /Tier 表|上位卡表|模擬器|玩家社群/);
   assert.doesNotMatch(html, /WHY UPTCG|為什麼選擇 UPTCG|全系列中文翻譯|智慧組牌系統/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|火焰樹|貓貓TCG/);

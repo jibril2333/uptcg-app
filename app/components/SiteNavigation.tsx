@@ -47,10 +47,6 @@ export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" 
             </a>
           ))}
         </nav>
-        <div className="sidebar__footer">
-          <a className="login-button" href="/#about"><span aria-hidden="true">♙</span>登入 Google<span>›</span></a>
-          <div className="sidebar__links"><a href="/#about">關於</a><a href="/#about">免責</a><a href="/#about">隱私</a></div>
-        </div>
       </aside>
 
       <nav className="bottom-nav" aria-label="行動版主要選單">
