@@ -29,10 +29,16 @@ test("ntfy settings persist securely and publish with bearer authentication", as
   assert.equal(Object.hasOwn(configured, "token"), false, "the API view must never expose the token");
 
   await manager.sendTest();
-  assert.equal(requests[0].url, "https://notify.example.com/uptcg-alerts");
+  assert.equal(requests[0].url, "https://notify.example.com");
   assert.equal(requests[0].init.headers.authorization, "Bearer tk_secret");
-  assert.equal(requests[0].init.headers.title, "UPTCG 测试通知");
-  assert.equal(requests[0].init.body, "ntfy 通知配置正常。");
+  assert.equal(requests[0].init.headers["content-type"], "application/json; charset=utf-8");
+  assert.deepEqual(JSON.parse(requests[0].init.body), {
+    message: "ntfy 通知配置正常。",
+    priority: 3,
+    tags: ["white_check_mark", "cards"],
+    title: "UPTCG 测试通知",
+    topic: "uptcg-alerts",
+  });
   assert.equal(manager.publicSettings().lastSentAt, "2026-08-02T12:00:00.000Z");
 
   const saved = JSON.parse(await readFile(path.join(cardDataRoot, "ntfy-settings.json"), "utf8"));

@@ -93,17 +93,18 @@ export function createNtfyManager({ cardDataRoot, fetchImpl = fetch, now = () =>
     if (!force && !settings.enabled) return { skipped: true };
     if (!settings.topic) throw new Error("请先填写并保存 ntfy Topic");
 
-    const headers = {
-      "content-type": "text/plain; charset=utf-8",
-      "priority": String(priority),
-      "tags": tags,
-      "title": title,
-    };
+    const headers = { "content-type": "application/json; charset=utf-8" };
     if (settings.token) headers.authorization = `Bearer ${settings.token}`;
 
     try {
-      const response = await fetchImpl(`${settings.serverUrl}/${encodeURIComponent(settings.topic)}`, {
-        body: message,
+      const response = await fetchImpl(settings.serverUrl, {
+        body: JSON.stringify({
+          message,
+          priority,
+          tags: tags.split(",").filter(Boolean),
+          title,
+          topic: settings.topic,
+        }),
         headers,
         method: "POST",
         signal: AbortSignal.timeout(10_000),
