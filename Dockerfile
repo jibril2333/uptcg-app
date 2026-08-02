@@ -27,6 +27,7 @@ WORKDIR /app
 
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --chown=node:node scripts/card-update-manager.mjs ./scripts/card-update-manager.mjs
+COPY --chown=node:node scripts/ntfy-manager.mjs ./scripts/ntfy-manager.mjs
 COPY --chown=node:node scripts/serve-local.mjs ./scripts/serve-local.mjs
 COPY --chown=node:node scripts/start-container.mjs ./scripts/start-container.mjs
 COPY --chown=node:node scripts/sync-ua-cards.mjs ./scripts/sync-ua-cards.mjs

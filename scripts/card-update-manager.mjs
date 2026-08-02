@@ -68,6 +68,7 @@ export function createCardUpdateManager({
   cardDataRoot,
   getCatalog,
   now = () => new Date(),
+  notify = async () => {},
   onCatalogUpdated = () => {},
   root,
   runSync = runOfficialSync,
@@ -128,8 +129,18 @@ export function createCardUpdateManager({
           productCount: catalog.series.length,
           syncedAt: state.lastSuccessAt,
         });
+        try {
+          await notify({ status: "success", catalog: catalogStatus(catalog), source });
+        } catch (error) {
+          console.error(`ntfy notification failed: ${error instanceof Error ? error.message : error}`);
+        }
       } catch (error) {
         state.lastError = (error instanceof Error ? error.message : String(error)).slice(0, 500);
+        try {
+          await notify({ status: "failure", error: state.lastError, source });
+        } catch (notificationError) {
+          console.error(`ntfy notification failed: ${notificationError instanceof Error ? notificationError.message : notificationError}`);
+        }
       } finally {
         running = false;
         currentSource = null;

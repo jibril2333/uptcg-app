@@ -208,6 +208,12 @@ test("server-renders personal settings and backup controls", async () => {
   assert.match(html, /立即检查更新/);
   assert.match(html, /自动更新 ·/);
   assert.match(html, /新作品与新分类会自动收录/);
+  assert.match(html, /ntfy 通知/);
+  assert.match(html, /服务器/);
+  assert.match(html, /Topic/);
+  assert.match(html, /访问令牌/);
+  assert.match(html, /通知 ·/);
+  assert.match(html, /测试/);
   assert.match(html, /3<!-- --> 个作品 · <!-- -->6<!-- --> 个分类/);
   assert.match(html, /296<!-- --> <small>张<\/small>/);
   assert.doesNotMatch(html, /卡表与运行环境|Docker · SQLite|Cloudflare Tunnel|持久化储存/);

@@ -368,6 +368,7 @@ img { display: block; max-width: 100%; }
 .settings-notice.is-error { color: #bd655d; }
 .settings-update-status { display: inline-flex; min-height: 25px; align-items: center; padding: 0 9px; border: 1px solid rgba(218,158,45,.15); border-radius: 99px; color: #87682f; background: rgba(218,158,45,.04); font-size: 8px; font-weight: 800; }
 .settings-update-status.is-running { color: #e2a832; border-color: rgba(218,158,45,.32); animation: settings-status-pulse 1.5s ease-in-out infinite; }
+.settings-update-status.is-on { color: #7faf91; border-color: rgba(89,163,116,.25); background: rgba(57,126,83,.07); }
 .settings-catalog-panel { min-height: 94px; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 17px 18px; border: 1px solid rgba(255,255,255,.075); border-radius: 13px; background: linear-gradient(135deg, #16171b, #131418); }
 .settings-catalog-summary { display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 3px 14px; }
 .settings-catalog-summary > span { grid-column: 1 / -1; color: #67676f; font-size: 8px; font-weight: 800; }
@@ -385,6 +386,17 @@ img { display: block; max-width: 100%; }
 .settings-switch.is-on > span::after { background: #e0a533; transform: translateX(15px); }
 .settings-update-meta { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 8px; padding: 0 3px; color: #55555d; font-size: 8px; }
 .settings-update-meta span:last-child { color: #77643f; }
+.settings-update-meta .is-error { color: #bd655d; }
+.settings-ntfy-panel { display: grid; grid-template-columns: minmax(190px, 1.15fr) minmax(140px, .7fr) minmax(190px, 1fr) auto; align-items: end; gap: 10px; padding: 15px; border: 1px solid rgba(255,255,255,.075); border-radius: 13px; background: #15161a; }
+.settings-ntfy-panel > label { min-width: 0; display: grid; gap: 6px; }
+.settings-ntfy-panel > label > span { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #62626a; font-size: 8px; font-weight: 750; }
+.settings-ntfy-panel > label > span button { padding: 0; border: 0; color: #946e2c; background: transparent; font: inherit; font-size: 8px; cursor: pointer; }
+.settings-ntfy-panel input { width: 100%; min-height: 38px; padding: 0 11px; border: 1px solid rgba(255,255,255,.09); border-radius: 8px; outline: none; color: #c7c7cc; background: #111216; font: inherit; font-size: 9px; }
+.settings-ntfy-panel input:focus { border-color: rgba(218,158,45,.45); box-shadow: 0 0 0 2px rgba(218,158,45,.07); }
+.settings-ntfy-panel input::placeholder { color: #44444b; }
+.settings-ntfy-actions { display: flex; gap: 7px; }
+.settings-ntfy-actions > button { min-height: 38px; padding: 0 11px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; color: #9999a0; background: #1d1e22; font: inherit; font-size: 8px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.settings-ntfy-actions > button:disabled { opacity: .5; cursor: wait; }
 @keyframes settings-status-pulse { 50% { opacity: .55; } }
 
 @media (max-width: 1180px) {
@@ -463,6 +475,8 @@ img { display: block; max-width: 100%; }
   .settings-hero { min-height: 132px; padding: 30px 28px 24px; }
   .settings-content { width: min(100% - 36px, 760px); padding-top: 30px; }
   .settings-action-grid { grid-template-columns: 1fr; }
+  .settings-ntfy-panel { grid-template-columns: 1fr 1fr; }
+  .settings-ntfy-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
 /* Rules and card restrictions */
@@ -562,6 +576,9 @@ img { display: block; max-width: 100%; }
   .settings-catalog-actions { width: 100%; }
   .settings-catalog-actions > button { flex: 1; }
   .settings-update-meta { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .settings-ntfy-panel { grid-template-columns: 1fr; }
+  .settings-ntfy-actions { grid-column: auto; }
+  .settings-ntfy-actions > button { flex: 1; }
   .settings-restore-preview { align-items: flex-start; flex-direction: column; }
   .settings-restore-preview > div:last-child { width: 100%; }
   .settings-restore-preview button { flex: 1; }

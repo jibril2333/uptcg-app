@@ -5,6 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import { Readable } from "node:stream";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createCardUpdateManager } from "./card-update-manager.mjs";
+import { createNtfyManager } from "./ntfy-manager.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const clientRoot = path.join(root, "dist/client");
@@ -164,10 +165,14 @@ globalThis.__UPTCG_CARD_CATALOG__ = JSON.parse(
   await readFile(path.join(cardDataRoot, "catalog.json"), "utf8"),
 );
 
+const ntfyManager = createNtfyManager({ cardDataRoot });
+await ntfyManager.initialize();
+
 const cardUpdateManager = createCardUpdateManager({
   cardAssetRoot,
   cardDataRoot,
   getCatalog: () => globalThis.__UPTCG_CARD_CATALOG__,
+  notify: (event) => ntfyManager.notifyCardUpdate(event),
   onCatalogUpdated: (catalog) => {
     globalThis.__UPTCG_CARD_CATALOG__ = catalog;
   },
@@ -219,6 +224,31 @@ async function cardUpdateResponse(request) {
   return jsonResponse(cardUpdateManager.status(), started ? 202 : 409);
 }
 
+async function ntfyResponse(request) {
+  if (["GET", "HEAD"].includes(request.method)) return jsonResponse(ntfyManager.publicSettings());
+  if (!["POST", "PUT"].includes(request.method)) return jsonResponse({ error: "method_not_allowed" }, 405);
+  if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+    return jsonResponse({ error: "json_required" }, 415);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "invalid_json" }, 400);
+  }
+
+  try {
+    if (request.method === "PUT") return jsonResponse(await ntfyManager.configure(body));
+    return jsonResponse(await ntfyManager.sendTest());
+  } catch (error) {
+    return jsonResponse({
+      ...ntfyManager.publicSettings(),
+      error: error instanceof Error ? error.message : String(error),
+    }, 400);
+  }
+}
+
 const server = createServer(async (incoming, outgoing) => {
   try {
     const origin = `http://${incoming.headers.host || `localhost:${port}`}`;
@@ -231,6 +261,10 @@ const server = createServer(async (incoming, outgoing) => {
     const request = new Request(new URL(incoming.url || "/", origin), init);
     if (new URL(request.url).pathname === "/api/card-update") {
       await sendResponse(incoming, outgoing, await cardUpdateResponse(request));
+      return;
+    }
+    if (new URL(request.url).pathname === "/api/ntfy") {
+      await sendResponse(incoming, outgoing, await ntfyResponse(request));
       return;
     }
     if (["GET", "HEAD"].includes(incoming.method || "GET")) {

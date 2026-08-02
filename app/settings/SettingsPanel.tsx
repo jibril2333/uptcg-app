@@ -8,6 +8,7 @@ import {
   type CollectionEntry,
 } from "../collection/collection-storage";
 import { storePinnedCodes } from "../components/pinned-series-storage";
+import { NtfySettingsPanel } from "./NtfySettings";
 
 type BackupFile = {
   data: {
@@ -361,6 +362,8 @@ export function SettingsPanel({
         </div>
         {cardUpdateNotice && <p className={`settings-notice${cardUpdate?.lastError && !cardUpdate.isRunning ? " is-error" : ""}`} role="status">{cardUpdateNotice}</p>}
       </section>
+
+      <NtfySettingsPanel />
 
       <section className="settings-section" aria-labelledby="settings-backup-title">
         <div className="settings-section__heading">

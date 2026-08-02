@@ -24,7 +24,7 @@ npm run start
 
 牌组功能位于 `http://localhost:3000/decks`。可新建、编辑、搜索和删除牌组，编辑器支持筛选卡牌、统计能量曲线、保存与导出 PNG。牌组、收集记录与置顶系列保存在 `.wrangler` 下的本机 SQLite 数据库中。
 
-设置页面位于 `http://localhost:3000/settings`。可查看牌组、收藏与置顶数量，导出完整 JSON 备份，并以不删除现有资料的方式安全合并恢复备份。也可以立即增量检查官方卡表，或开启每 24 小时自动检查；官网出现新作品、新分类或已有分类新增卡片时会自动纳入网站。
+设置页面位于 `http://localhost:3000/settings`。可查看牌组、收藏与置顶数量，导出或恢复 JSON 备份，也可以手动或自动增量更新官方卡表。ntfy 通知支持自定义 HTTPS 服务器、Topic 与可选访问令牌，并在卡牌更新成功或失败时通知。
 
 ## 更新官方卡牌数据
 
@@ -83,6 +83,7 @@ docker compose logs -f uptcg
 - `/data/card-data`：官方卡牌 JSON 资料。
 - `/data/card-assets`：官方卡图。
 - `/data/card-data/update-settings.json`：自动更新开关、下次检查与最近结果。
+- `/data/card-data/ntfy-settings.json`：ntfy 通知配置与访问令牌（不会写入镜像或个人资料备份）。
 
 重建或升级容器会继续使用同一个卷。不要执行 `docker compose down -v`，
 否则会删除这些资料。普通停止服务：

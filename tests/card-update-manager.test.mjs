@@ -20,6 +20,7 @@ test("card updater persists automatic checks and hot-loads newly discovered work
     series: [{ cardCount: 1, productKey: "ua01bt", workCode: "OLD" }],
     syncedAt: currentTime.toISOString(),
   };
+  const notifications = [];
   await writeFile(path.join(cardDataRoot, "catalog.json"), JSON.stringify(catalog));
 
   const manager = createCardUpdateManager({
@@ -27,6 +28,7 @@ test("card updater persists automatic checks and hot-loads newly discovered work
     cardDataRoot,
     getCatalog: () => catalog,
     now: () => currentTime,
+    notify: async (event) => { notifications.push(event); },
     onCatalogUpdated: (next) => { catalog = next; },
     root: temporaryRoot,
     runSync: async () => {
@@ -61,6 +63,9 @@ test("card updater persists automatic checks and hot-loads newly discovered work
     workCount: 2,
   });
   assert.equal(catalog.series[1].workCode, "NEW");
+  assert.equal(notifications.length, 1);
+  assert.equal(notifications[0].status, "success");
+  assert.equal(notifications[0].catalog.cardCount, 4);
 
   const savedSettings = JSON.parse(await readFile(path.join(cardDataRoot, "update-settings.json"), "utf8"));
   assert.equal(savedSettings.autoUpdate, true);
@@ -75,12 +80,14 @@ test("card updater reports failure without replacing the existing catalog", asyn
   const cardDataRoot = path.join(temporaryRoot, "card-data");
   await mkdir(cardDataRoot, { recursive: true });
   const catalog = { series: [{ cardCount: 2, productKey: "safe", workCode: "SAFE" }] };
+  const notifications = [];
   await writeFile(path.join(cardDataRoot, "catalog.json"), JSON.stringify(catalog));
 
   const manager = createCardUpdateManager({
     cardAssetRoot: path.join(temporaryRoot, "card-assets"),
     cardDataRoot,
     getCatalog: () => catalog,
+    notify: async (event) => { notifications.push(event); },
     root: temporaryRoot,
     runSync: async () => { throw new Error("official site unavailable"); },
     scheduler: false,
@@ -90,5 +97,7 @@ test("card updater reports failure without replacing the existing catalog", asyn
   await manager.waitForIdle();
   assert.match(manager.status().lastError, /official site unavailable/);
   assert.equal(manager.status().catalog.cardCount, 2);
+  assert.equal(notifications[0].status, "failure");
+  assert.match(notifications[0].error, /official site unavailable/);
   manager.close();
 });
