@@ -93,3 +93,9 @@ export function storeCollectionEntry(key: string, entry: CollectionEntry | null,
   });
   return collectionWriteQueue;
 }
+
+export async function storeCollectionEntries(entries: CollectionEntries) {
+  await migrateCollection(entries);
+  cacheCollection(entries);
+  window.localStorage.setItem(COLLECTION_MIGRATION_KEY, "1");
+}

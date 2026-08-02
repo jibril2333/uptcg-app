@@ -4,6 +4,7 @@ const navItems = [
   { id: "rules", icon: "⚖", label: "規則與禁卡", href: "/rules" },
   { id: "decks", icon: "♧", label: "我的牌組", href: "/decks" },
   { id: "collection", icon: "▦", label: "我的收集", href: "/collection" },
+  { id: "settings", icon: "⚙", label: "設定", href: "/settings" },
 ];
 
 const mobileNavItems = navItems;
@@ -20,7 +21,7 @@ function Brand({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" | "decks" | "collection" }) {
+export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" | "decks" | "collection" | "settings" }) {
   return (
     <>
       <header className="mobile-header">

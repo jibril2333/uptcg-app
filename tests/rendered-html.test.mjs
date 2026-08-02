@@ -98,8 +98,10 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.match(html, /href="\/cards\?series=EVA"/);
   assert.match(html, /href="\/collection"/);
   assert.match(html, /href="\/rules"/);
+  assert.match(html, /href="\/settings"/);
   assert.match(html, /我的收集/);
   assert.match(html, /規則與禁卡/);
+  assert.match(html, /設定/);
   assert.doesNotMatch(html, /最強大的中文組牌神器|即時翻譯|登入 Google/);
   assert.doesNotMatch(html, /UPTCG 由熱愛|UPTCG 資料庫|關於我們|免責聲明|隱私政策|服務條款/);
   assert.doesNotMatch(html, /Tier 表|上位卡表|模擬器|玩家社群/);
@@ -172,6 +174,22 @@ test("server-renders the local card collection tracker", async () => {
   assert.match(html, /href="\/collection"/);
   assert.doesNotMatch(html, /只看已拥有/);
   assert.doesNotMatch(html, /aria-label="卡牌产品"/);
+});
+
+test("server-renders personal settings and backup controls", async () => {
+  const response = await render("/settings");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>設定｜UPTCG<\/title>/);
+  assert.match(html, /LOCAL APP SETTINGS/);
+  assert.match(html, /个人资料/);
+  assert.match(html, /导出完整备份/);
+  assert.match(html, /从备份恢复/);
+  assert.match(html, /安全合并 JSON 备份/);
+  assert.match(html, /卡表与运行环境/);
+  assert.match(html, /2<!-- --> 个作品 · <!-- -->5<!-- --> 个分类/);
+  assert.match(html, /295<!-- --> 张卡牌/);
+  assert.match(html, /Docker · SQLite/);
 });
 
 test("server-renders the work and color setup before the deck editor", async () => {
