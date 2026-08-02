@@ -22,11 +22,9 @@ export default function SettingsPage() {
       <main className="main-content settings-page">
         <header className="settings-hero">
           <div>
-            <p>LOCAL APP SETTINGS</p>
+            <p>SETTINGS</p>
             <h1>設定</h1>
-            <span>管理这台 Mac 上的个人资料备份，并确认卡表与运行环境状态。</span>
           </div>
-          <span className="settings-hero__badge">仅储存在本机</span>
         </header>
 
         <SettingsPanel

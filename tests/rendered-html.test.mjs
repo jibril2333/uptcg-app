@@ -199,20 +199,19 @@ test("server-renders personal settings and backup controls", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /<title>設定｜UPTCG<\/title>/);
-  assert.match(html, /LOCAL APP SETTINGS/);
-  assert.match(html, /个人资料/);
-  assert.match(html, /导出完整备份/);
-  assert.match(html, /从备份恢复/);
-  assert.match(html, /安全合并 JSON 备份/);
-  assert.match(html, /卡牌数据更新/);
-  assert.match(html, /手动检查官方卡表/);
-  assert.match(html, /每天自动检查/);
+  assert.match(html, /SETTINGS/);
+  assert.match(html, /数据概览/);
+  assert.match(html, /导出备份/);
+  assert.match(html, /恢复备份/);
+  assert.match(html, /合并导入，不清空现有资料/);
+  assert.match(html, /卡牌数据/);
   assert.match(html, /立即检查更新/);
-  assert.match(html, /官方新增作品时也会自动加入作品选择页/);
-  assert.match(html, /卡表与运行环境/);
+  assert.match(html, /自动更新 ·/);
+  assert.match(html, /新作品与新分类会自动收录/);
   assert.match(html, /3<!-- --> 个作品 · <!-- -->6<!-- --> 个分类/);
-  assert.match(html, /296<!-- --> 张卡牌/);
-  assert.match(html, /Docker · SQLite/);
+  assert.match(html, /296<!-- --> <small>张<\/small>/);
+  assert.doesNotMatch(html, /卡表与运行环境|Docker · SQLite|Cloudflare Tunnel|持久化储存/);
+  assert.doesNotMatch(html, /管理这台 Mac 上的个人资料备份/);
 });
 
 test("server-renders the work and color setup before the deck editor", async () => {

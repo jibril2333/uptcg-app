@@ -308,8 +308,8 @@ export function SettingsPanel({
     <div className="settings-content">
       <section className="settings-section" aria-labelledby="settings-data-title">
         <div className="settings-section__heading">
-          <div><p>YOUR DATA</p><h2 id="settings-data-title">个人资料</h2></div>
-          <button type="button" onClick={() => void refreshSnapshot()} disabled={isBusy}>重新读取</button>
+          <div><p>OVERVIEW</p><h2 id="settings-data-title">数据概览</h2></div>
+          <button type="button" onClick={() => void refreshSnapshot()} disabled={isBusy}>刷新</button>
         </div>
         <div className="settings-stat-grid" aria-live="polite">
           <article><span>牌组</span><strong>{stats?.decks ?? "—"}</strong><small>副</small></article>
@@ -319,71 +319,23 @@ export function SettingsPanel({
         </div>
       </section>
 
-      <section className="settings-section" aria-labelledby="settings-backup-title">
-        <div className="settings-section__heading">
-          <div><p>BACKUP &amp; RESTORE</p><h2 id="settings-backup-title">备份与恢复</h2></div>
-        </div>
-        <div className="settings-action-grid">
-          <article className="settings-action-card">
-            <span className="settings-action-card__icon" aria-hidden="true">↓</span>
-            <div><h3>导出完整备份</h3><p>下载牌组、收藏数量和首页置顶。卡牌图片与官方卡表不会写入备份。</p></div>
-            <button className="settings-primary-button" type="button" disabled={isBusy} onClick={() => void exportBackup()}>导出 JSON</button>
-          </article>
-          <article className="settings-action-card">
-            <span className="settings-action-card__icon" aria-hidden="true">↑</span>
-            <div><h3>从备份恢复</h3><p>安全合并 JSON 备份，不会删除备份中没有的现有资料，也不会用旧记录覆盖较新记录。</p></div>
-            <input ref={fileInput} hidden type="file" accept="application/json,.json" onChange={(event) => void chooseBackup(event.target.files?.[0])} />
-            <button type="button" disabled={isBusy} onClick={() => fileInput.current?.click()}>选择备份</button>
-          </article>
-        </div>
-
-        {pendingBackup && pendingStats && (
-          <div className="settings-restore-preview" role="status">
-            <div>
-              <span>等待确认的备份</span>
-              <strong>{backupDate(pendingBackup.exportedAt)}</strong>
-              <small>{pendingStats.decks} 副牌组 · {pendingStats.collectionKinds} 种／{pendingStats.collectionCopies} 张收藏 · {pendingStats.pinned} 个置顶</small>
-            </div>
-            <div>
-              <button type="button" disabled={isBusy} onClick={() => setPendingBackup(null)}>取消</button>
-              <button className="settings-primary-button" type="button" disabled={isBusy} onClick={() => void restoreBackup()}>确认合并恢复</button>
-            </div>
-          </div>
-        )}
-        {notice && <p className="settings-notice" role="status">{notice}</p>}
-      </section>
-
       <section className="settings-section" aria-labelledby="settings-update-title">
         <div className="settings-section__heading">
-          <div><p>CARD DATA UPDATES</p><h2 id="settings-update-title">卡牌数据更新</h2></div>
+          <div><p>CARD DATA</p><h2 id="settings-update-title">卡牌数据</h2></div>
           <span className={`settings-update-status${cardUpdate?.isRunning ? " is-running" : ""}`}>
-            {cardUpdate?.isRunning ? "正在检查官网" : "增量更新"}
+            {cardUpdate?.isRunning ? "正在更新" : "增量更新"}
           </span>
         </div>
-        <div className="settings-update-grid">
-          <article className="settings-update-card">
-            <span className="settings-action-card__icon" aria-hidden="true">↻</span>
-            <div>
-              <h3>手动检查官方卡表</h3>
-              <p>读取官网全部分类，只下载新增或已变更的资料与图片；官方新增作品时也会自动加入作品选择页。</p>
-              <small>{cardUpdate?.lastSuccessAt
-                ? `上次成功：${backupDate(cardUpdate.lastSuccessAt)}`
-                : "尚无手动更新记录"}</small>
-            </div>
+        <div className="settings-catalog-panel">
+          <div className="settings-catalog-summary">
+            <span>当前卡表</span>
+            <strong>{(cardUpdate?.catalog.cardCount ?? cardCount).toLocaleString("zh-CN")} <small>张</small></strong>
+            <p>{cardUpdate?.catalog.workCount ?? workCount} 个作品 · {cardUpdate?.catalog.productCount ?? productCount} 个分类</p>
+          </div>
+          <div className="settings-catalog-actions">
             <button className="settings-primary-button" type="button" disabled={isUpdateSaving || cardUpdate?.isRunning} onClick={() => void startCardUpdate()}>
               {cardUpdate?.isRunning ? "更新进行中…" : "立即检查更新"}
             </button>
-          </article>
-
-          <article className="settings-update-card settings-update-card--auto">
-            <span className="settings-action-card__icon" aria-hidden="true">◷</span>
-            <div>
-              <h3>每天自动检查</h3>
-              <p>启用后每 24 小时检查一次。错过计划时，会在 Docker 服务下次启动后自动补查。</p>
-              <small>{cardUpdate?.autoUpdate && cardUpdate.nextCheckAt
-                ? `下次检查：${backupDate(cardUpdate.nextCheckAt)}`
-                : "目前不会自动连接官网"}</small>
-            </div>
             <button
               className={`settings-switch${cardUpdate?.autoUpdate ? " is-on" : ""}`}
               type="button"
@@ -393,37 +345,55 @@ export function SettingsPanel({
               onClick={() => void toggleAutoUpdate()}
             >
               <span aria-hidden="true" />
-              {cardUpdate?.autoUpdate ? "已开启" : "已关闭"}
+              自动更新 · {cardUpdate?.autoUpdate ? "开" : "关"}
             </button>
-          </article>
+          </div>
+        </div>
+        <div className="settings-update-meta">
+          <span>{cardUpdate?.autoUpdate && cardUpdate.nextCheckAt
+            ? `下次 ${backupDate(cardUpdate.nextCheckAt)}`
+            : cardUpdate?.lastSuccessAt
+              ? `上次 ${backupDate(cardUpdate.lastSuccessAt)}`
+              : (cardUpdate?.catalog.syncedAt ?? syncedAt)
+                ? `卡表 ${backupDate(cardUpdate?.catalog.syncedAt ?? syncedAt)}`
+                : "尚无更新记录"}</span>
+          <span>新作品与新分类会自动收录</span>
         </div>
         {cardUpdateNotice && <p className={`settings-notice${cardUpdate?.lastError && !cardUpdate.isRunning ? " is-error" : ""}`} role="status">{cardUpdateNotice}</p>}
       </section>
 
-      <section className="settings-section" aria-labelledby="settings-system-title">
+      <section className="settings-section" aria-labelledby="settings-backup-title">
         <div className="settings-section__heading">
-          <div><p>CATALOG &amp; SYSTEM</p><h2 id="settings-system-title">卡表与运行环境</h2></div>
+          <div><p>BACKUP</p><h2 id="settings-backup-title">备份与恢复</h2></div>
         </div>
-        <div className="settings-info-grid">
-          <article>
-            <span>官方卡表缓存</span>
-            <strong>{cardUpdate?.catalog.workCount ?? workCount} 个作品 · {cardUpdate?.catalog.productCount ?? productCount} 个分类</strong>
-            <small>{(cardUpdate?.catalog.cardCount ?? cardCount).toLocaleString("zh-CN")} 张卡牌{(cardUpdate?.catalog.syncedAt ?? syncedAt) ? ` · 最近同步 ${backupDate(cardUpdate?.catalog.syncedAt ?? syncedAt)}` : ""}</small>
-            <a href="/cards">浏览官方卡表 <b>→</b></a>
+        <div className="settings-action-grid">
+          <article className="settings-action-card">
+            <span className="settings-action-card__icon" aria-hidden="true">↓</span>
+            <div><h3>导出备份</h3><small>牌组、收藏与置顶</small></div>
+            <button className="settings-primary-button" type="button" disabled={isBusy} onClick={() => void exportBackup()}>导出 JSON</button>
           </article>
-          <article>
-            <span>本机服务</span>
-            <strong>Docker · SQLite</strong>
-            <small>服务端口 3002 · Cloudflare Tunnel 对外访问 · GitHub Actions 自动部署</small>
-            <a href="/decks">管理我的牌组 <b>→</b></a>
-          </article>
-          <article>
-            <span>资料位置</span>
-            <strong>持久化储存</strong>
-            <small>数据库与卡表位于 Docker 外部目录，更新容器不会删除个人资料。</small>
-            <a href="/collection">管理我的收集 <b>→</b></a>
+          <article className="settings-action-card">
+            <span className="settings-action-card__icon" aria-hidden="true">↑</span>
+            <div><h3>恢复备份</h3><small>合并导入，不清空现有资料</small></div>
+            <input ref={fileInput} hidden type="file" accept="application/json,.json" onChange={(event) => void chooseBackup(event.target.files?.[0])} />
+            <button type="button" disabled={isBusy} onClick={() => fileInput.current?.click()}>选择文件</button>
           </article>
         </div>
+
+        {pendingBackup && pendingStats && (
+          <div className="settings-restore-preview" role="status">
+            <div>
+              <span>等待确认</span>
+              <strong>{backupDate(pendingBackup.exportedAt)}</strong>
+              <small>{pendingStats.decks} 副牌组 · {pendingStats.collectionKinds} 种／{pendingStats.collectionCopies} 张收藏 · {pendingStats.pinned} 个置顶</small>
+            </div>
+            <div>
+              <button type="button" disabled={isBusy} onClick={() => setPendingBackup(null)}>取消</button>
+              <button className="settings-primary-button" type="button" disabled={isBusy} onClick={() => void restoreBackup()}>确认恢复</button>
+            </div>
+          </div>
+        )}
+        {notice && <p className="settings-notice" role="status">{notice}</p>}
       </section>
     </div>
   );
