@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { buildWorks } from "./card-data";
 import { LegacyDataMigration } from "./components/LegacyDataMigration";
 import { series } from "./series-data";
 import "./globals.css";
@@ -14,9 +15,13 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const seriesCodes = [...new Set([
+    ...series.map((item) => item.code),
+    ...buildWorks().map((work) => work.code),
+  ])];
   return (
     <html lang="zh-Hant">
-      <body><LegacyDataMigration seriesCodes={series.map((item) => item.code)} />{children}</body>
+      <body><LegacyDataMigration seriesCodes={seriesCodes} />{children}</body>
     </html>
   );
 }

@@ -4,6 +4,7 @@ import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { Readable } from "node:stream";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { createCardUpdateManager } from "./card-update-manager.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const clientRoot = path.join(root, "dist/client");
@@ -163,6 +164,17 @@ globalThis.__UPTCG_CARD_CATALOG__ = JSON.parse(
   await readFile(path.join(cardDataRoot, "catalog.json"), "utf8"),
 );
 
+const cardUpdateManager = createCardUpdateManager({
+  cardAssetRoot,
+  cardDataRoot,
+  getCatalog: () => globalThis.__UPTCG_CARD_CATALOG__,
+  onCatalogUpdated: (catalog) => {
+    globalThis.__UPTCG_CARD_CATALOG__ = catalog;
+  },
+  root,
+});
+await cardUpdateManager.initialize();
+
 const { default: worker } = await import(pathToFileURL(workerPath).href);
 
 async function sendResponse(incoming, outgoing, response) {
@@ -170,6 +182,41 @@ async function sendResponse(incoming, outgoing, response) {
   outgoing.statusMessage = response.statusText;
   response.headers.forEach((value, name) => outgoing.setHeader(name, value));
   outgoing.end(incoming.method === "HEAD" ? undefined : Buffer.from(await response.arrayBuffer()));
+}
+
+function jsonResponse(value, status = 200) {
+  return new Response(JSON.stringify(value), {
+    headers: {
+      "cache-control": "no-store",
+      "content-type": "application/json; charset=utf-8",
+    },
+    status,
+  });
+}
+
+async function cardUpdateResponse(request) {
+  if (["GET", "HEAD"].includes(request.method)) return jsonResponse(cardUpdateManager.status());
+  if (!["POST", "PUT"].includes(request.method)) {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
+  if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+    return jsonResponse({ error: "json_required" }, 415);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "invalid_json" }, 400);
+  }
+
+  if (request.method === "PUT") {
+    if (typeof body?.enabled !== "boolean") return jsonResponse({ error: "enabled_required" }, 400);
+    return jsonResponse(await cardUpdateManager.setAutoUpdate(body.enabled));
+  }
+
+  const started = cardUpdateManager.startUpdate("manual");
+  return jsonResponse(cardUpdateManager.status(), started ? 202 : 409);
 }
 
 const server = createServer(async (incoming, outgoing) => {
@@ -182,6 +229,10 @@ const server = createServer(async (incoming, outgoing) => {
       method: incoming.method,
     };
     const request = new Request(new URL(incoming.url || "/", origin), init);
+    if (new URL(request.url).pathname === "/api/card-update") {
+      await sendResponse(incoming, outgoing, await cardUpdateResponse(request));
+      return;
+    }
     if (["GET", "HEAD"].includes(incoming.method || "GET")) {
       const assetResponse = await fetchAsset(request);
       if (assetResponse.status !== 404) {
@@ -219,6 +270,7 @@ server.listen(port, hostname, () => {
 });
 
 function close() {
+  cardUpdateManager.close();
   server.close(() => {
     sqlite.close();
     process.exit(0);

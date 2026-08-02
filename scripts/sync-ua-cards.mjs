@@ -16,6 +16,7 @@ const publicCardsRoot = path.resolve(process.env.UPTCG_CARD_ASSET_DIR || path.jo
 const cliSeries = process.argv.find((arg) => arg.startsWith("--series="));
 const syncAll = process.argv.includes("--all");
 const force = process.argv.includes("--force");
+const refresh = process.argv.includes("--refresh");
 const cliConcurrency = process.argv.find((arg) => arg.startsWith("--concurrency="));
 const concurrency = Math.max(1, Number.parseInt(cliConcurrency?.split("=")[1] || "6", 10));
 const requestedSeriesIds = (cliSeries?.split("=")[1] || DEFAULT_SERIES)
@@ -239,6 +240,7 @@ function summaryFromData(data, productKey) {
   return {
     cardCount: data.cardCount,
     colors: data.colors || inferColors(data.cards),
+    coverImage: data.cards?.[0]?.image,
     dataFile: configuredDataRoot ? `${productKey}.json` : `data/cards/${productKey}.json`,
     dataUrl: `/cards/${productKey}/data.json`,
     officialListUrl: data.officialListUrl,
@@ -268,22 +270,40 @@ async function hasCompleteAssets(data, productKey) {
   }
 }
 
+function sameCardList(cachedCards = [], officialCards = []) {
+  const identity = (card) => `${card.cardNo}\u0000${card.imageFileName || ""}`;
+  if (cachedCards.length !== officialCards.length) return false;
+  const cached = cachedCards.map(identity).sort();
+  const official = officialCards.map(identity).sort();
+  return cached.every((value, index) => value === official[index]);
+}
+
 function isMixedCatalogEntry(item, seriesId) {
   return item.sourceSeriesId === seriesId || item.seriesId?.startsWith(`${seriesId}-`);
 }
 
-async function reuseCachedMixedSeries(catalog, seriesId) {
+async function reuseCachedMixedSeries(catalog, seriesId, listHtml = null) {
   const cachedItems = catalog.series.filter((item) => isMixedCatalogEntry(item, seriesId));
   if (!cachedItems.length) return null;
 
   try {
-    const summaries = [];
+    const loaded = [];
     for (const cached of cachedItems) {
       const data = JSON.parse(await readFile(resolveDataFile(cached.dataFile), "utf8"));
       if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
       const workCode = data.workCode || inferWorkCode(data.cards);
-      const { productKey, setCode } = mixedProductIdentity(seriesId, workCode);
+      const { productKey } = mixedProductIdentity(seriesId, workCode);
       if (!(await hasCompleteAssets(data, productKey))) return null;
+      loaded.push({ data, workCode });
+    }
+    if (listHtml) {
+      const official = parseListPage(listHtml, seriesId);
+      if (!sameCardList(loaded.flatMap(({ data }) => data.cards), official.cards)) return null;
+    }
+
+    const summaries = [];
+    for (const { data, workCode } of loaded) {
+      const { productKey, setCode } = mixedProductIdentity(seriesId, workCode);
       const normalized = {
         ...data,
         colors: data.colors || inferColors(data.cards),
@@ -302,12 +322,13 @@ async function reuseCachedMixedSeries(catalog, seriesId) {
   }
 }
 
-async function reuseCachedSeries(catalog, seriesId) {
+async function reuseCachedSeries(catalog, seriesId, listHtml = null) {
   const cached = catalog.series.find((item) => item.seriesId === seriesId);
   if (!cached?.dataFile) return null;
   try {
     const data = JSON.parse(await readFile(resolveDataFile(cached.dataFile), "utf8"));
     if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
+    if (listHtml && !sameCardList(data.cards, parseListPage(listHtml, seriesId).cards)) return null;
     const { productKey, setCode } = productIdentity(data.productName, data.cards[0], seriesId);
     if (!(await hasCompleteAssets(data, productKey))) return null;
     const normalized = {
@@ -324,10 +345,10 @@ async function reuseCachedSeries(catalog, seriesId) {
   }
 }
 
-async function syncSeries(seriesId) {
+async function syncSeries(seriesId, prefetchedListHtml = null) {
   console.log(`\nFetching official card list for series ${seriesId}...`);
   const listUrl = `${OFFICIAL_ORIGIN}/jp/cardlist/?search=true&series=${encodeURIComponent(seriesId)}`;
-  const listHtml = await fetchWithRetry(listUrl);
+  const listHtml = prefetchedListHtml ?? await fetchWithRetry(listUrl);
   const { cards: listCards, productName, resultCount } = parseListPage(listHtml, seriesId);
   const { productKey, setCode } = productIdentity(productName, listCards[0], seriesId);
   const imageDirectory = path.join(publicCardsRoot, productKey);
@@ -390,10 +411,10 @@ async function syncSeries(seriesId) {
   return summaryFromData(data, productKey);
 }
 
-async function syncMixedSeries(seriesId) {
+async function syncMixedSeries(seriesId, prefetchedListHtml = null) {
   console.log(`\nFetching official mixed card list for series ${seriesId}...`);
   const listUrl = `${OFFICIAL_ORIGIN}/jp/cardlist/?search=true&series=${encodeURIComponent(seriesId)}`;
-  const listHtml = await fetchWithRetry(listUrl);
+  const listHtml = prefetchedListHtml ?? await fetchWithRetry(listUrl);
   const { cards: listCards, productName, resultCount } = parseListPage(listHtml, seriesId);
   const groupedListCards = listCards.map((card) => ({
     ...card,
@@ -487,9 +508,11 @@ if (syncAll) {
 const failures = [];
 for (const seriesId of seriesIds) {
   try {
+    const listUrl = `${OFFICIAL_ORIGIN}/jp/cardlist/?search=true&series=${encodeURIComponent(seriesId)}`;
+    const prefetchedListHtml = refresh && !force ? await fetchWithRetry(listUrl) : null;
     if (MIXED_CARD_SERIES.has(seriesId)) {
-      const cached = !force ? await reuseCachedMixedSeries(catalog, seriesId) : null;
-      const summaries = cached || await syncMixedSeries(seriesId);
+      const cached = !force ? await reuseCachedMixedSeries(catalog, seriesId, prefetchedListHtml) : null;
+      const summaries = cached || await syncMixedSeries(seriesId, prefetchedListHtml);
       if (cached) {
         console.log(`Using ${summaries.length} cached classified groups for mixed series ${seriesId}.`);
       }
@@ -501,8 +524,8 @@ for (const seriesId of seriesIds) {
       await saveCatalog(catalog);
       continue;
     }
-    const cached = !force ? await reuseCachedSeries(catalog, seriesId) : null;
-    const summary = cached || await syncSeries(seriesId);
+    const cached = !force ? await reuseCachedSeries(catalog, seriesId, prefetchedListHtml) : null;
+    const summary = cached || await syncSeries(seriesId, prefetchedListHtml);
     if (cached) console.log(`Using cached ${summary.setCode} (${summary.cardCount} cards).`);
     catalog.series = [...catalog.series.filter((item) => item.seriesId !== seriesId), summary];
     catalog.series.sort((a, b) => a.seriesId.localeCompare(b.seriesId));

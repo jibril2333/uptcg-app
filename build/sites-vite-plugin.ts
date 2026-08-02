@@ -17,6 +17,7 @@ async function exists(path: string): Promise<boolean> {
 // Packages Sites metadata and migrations after Vite finishes compiling.
 export function sites(): Plugin {
   let root = process.cwd();
+  let packaging = Promise.resolve();
 
   return {
     name: "sites",
@@ -24,22 +25,29 @@ export function sites(): Plugin {
     configResolved(config) {
       root = config.root;
     },
-    async closeBundle() {
-      const outputDirectory = resolve(root, "dist", ".openai");
-      const hostingConfig = resolve(root, ".openai", "hosting.json");
-      const drizzleSource = resolve(root, "drizzle");
+    closeBundle() {
+      const environmentName = (this as unknown as { environment?: { name?: string } }).environment?.name;
+      if (environmentName && environmentName !== "ssr") return;
+      // Vite's client, RSC and SSR environments can close concurrently. Queue
+      // the final SSR packaging so repeated hooks never copy concurrently.
+      packaging = packaging.then(async () => {
+        const outputDirectory = resolve(root, "dist", ".openai");
+        const hostingConfig = resolve(root, ".openai", "hosting.json");
+        const drizzleSource = resolve(root, "drizzle");
 
-      await rm(outputDirectory, { recursive: true, force: true });
-      await mkdir(outputDirectory, { recursive: true });
+        await rm(outputDirectory, { recursive: true, force: true });
+        await mkdir(outputDirectory, { recursive: true });
 
-      if (await exists(hostingConfig)) {
-        await cp(hostingConfig, resolve(outputDirectory, "hosting.json"));
-      }
-      if (await exists(drizzleSource)) {
-        await cp(drizzleSource, resolve(outputDirectory, "drizzle"), {
-          recursive: true,
-        });
-      }
+        if (await exists(hostingConfig)) {
+          await cp(hostingConfig, resolve(outputDirectory, "hosting.json"));
+        }
+        if (await exists(drizzleSource)) {
+          await cp(drizzleSource, resolve(outputDirectory, "drizzle"), {
+            recursive: true,
+          });
+        }
+      });
+      return packaging;
     },
   };
 }

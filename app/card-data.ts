@@ -17,23 +17,36 @@ declare global {
 export function buildWorks(catalog: UaCatalog = globalThis.__UPTCG_CARD_CATALOG__ ?? {}): UaWork[] {
   const productCatalog = catalog.series as unknown as UaWork["datasets"];
   if (!Array.isArray(productCatalog)) return [];
-  return series
-    .map((item) => {
-      const datasets = productCatalog
-        .filter((dataset) => dataset.workCode === item.code)
-        .sort((a, b) => {
-          const supplemental = (productKey: string) => /^(promo|limited)-/.test(productKey) ? 1 : 0;
-          const supplementalOrder = supplemental(a.productKey) - supplemental(b.productKey);
-          const specialOrder = Number(a.productKey.startsWith("special-")) - Number(b.productKey.startsWith("special-"));
-          return supplementalOrder || specialOrder || b.seriesId.localeCompare(a.seriesId);
-        });
+
+  const supplemental = (productKey: string) => /^(promo|limited)-/.test(productKey) ? 1 : 0;
+  const sortDatasets = (datasets: UaWork["datasets"]) => datasets.sort((a, b) => {
+    const supplementalOrder = supplemental(a.productKey) - supplemental(b.productKey);
+    const specialOrder = Number(a.productKey.startsWith("special-")) - Number(b.productKey.startsWith("special-"));
+    return supplementalOrder || specialOrder || b.seriesId.localeCompare(a.seriesId);
+  });
+  const knownSeries = new Map(series.map((item) => [item.code, item]));
+  const discoveredCodes = [...new Set(productCatalog.map((dataset) => dataset.workCode).filter(Boolean))];
+
+  return discoveredCodes
+    .map((code) => {
+      const item = knownSeries.get(code);
+      const datasets = sortDatasets(productCatalog.filter((dataset) => dataset.workCode === code));
+      const originalName = datasets[0]?.productName.replace(/【[^】]+】/g, "").trim() || code;
       return {
-        code: item.code,
-        name: item.name,
-        originalName: datasets[0]?.productName.replace(/【[^】]+】/g, "").trim() || item.name,
-        image: item.image ?? `/assets/series/${item.code}.${item.ext}`,
+        code,
         datasets,
+        image: item
+          ? item.image ?? `/assets/series/${item.code}.${item.ext}`
+          : datasets.find((dataset) => dataset.coverImage)?.coverImage ?? "/assets/union-arena.png",
+        name: item?.name ?? originalName,
+        originalName,
       };
     })
-    .filter((work) => work.datasets.length) as UaWork[];
+    .sort((a, b) => {
+      const aKnown = knownSeries.has(a.code);
+      const bKnown = knownSeries.has(b.code);
+      if (aKnown !== bKnown) return aKnown ? 1 : -1;
+      if (!aKnown) return (b.datasets[0]?.seriesId ?? "").localeCompare(a.datasets[0]?.seriesId ?? "");
+      return series.findIndex((item) => item.code === a.code) - series.findIndex((item) => item.code === b.code);
+    });
 }

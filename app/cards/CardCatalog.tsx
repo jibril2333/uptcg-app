@@ -25,6 +25,7 @@ export type UaCard = {
 export type UaDataset = {
   cardCount: number;
   colors: string[];
+  coverImage?: string;
   dataUrl: string;
   officialListUrl: string;
   productKey: string;

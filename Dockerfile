@@ -11,6 +11,7 @@ COPY app ./app
 COPY build ./build
 COPY db ./db
 COPY public ./public
+COPY scripts ./scripts
 COPY worker ./worker
 COPY next.config.ts postcss.config.mjs tsconfig.json vite.config.ts ./
 RUN npm run build
@@ -25,6 +26,7 @@ ENV UPTCG_CARD_ASSET_DIR=/data/card-assets
 WORKDIR /app
 
 COPY --from=build --chown=node:node /app/dist ./dist
+COPY --chown=node:node scripts/card-update-manager.mjs ./scripts/card-update-manager.mjs
 COPY --chown=node:node scripts/serve-local.mjs ./scripts/serve-local.mjs
 COPY --chown=node:node scripts/start-container.mjs ./scripts/start-container.mjs
 COPY --chown=node:node scripts/sync-ua-cards.mjs ./scripts/sync-ua-cards.mjs

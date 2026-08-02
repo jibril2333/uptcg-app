@@ -367,6 +367,24 @@ img { display: block; max-width: 100%; }
 .settings-restore-preview > div:last-child { display: flex; gap: 8px; }
 .settings-restore-preview button { min-height: 36px; padding: 0 13px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; color: #9999a0; background: #1a1b1f; font: inherit; font-size: 9px; font-weight: 800; cursor: pointer; }
 .settings-notice { margin: 11px 2px 0; color: #a77928; font-size: 9px; line-height: 1.6; }
+.settings-notice.is-error { color: #bd655d; }
+.settings-update-status { display: inline-flex; min-height: 27px; align-items: center; padding: 0 10px; border: 1px solid rgba(218,158,45,.15); border-radius: 99px; color: #87682f; background: rgba(218,158,45,.04); font-size: 8px; font-weight: 800; }
+.settings-update-status.is-running { color: #e2a832; border-color: rgba(218,158,45,.32); animation: settings-status-pulse 1.5s ease-in-out infinite; }
+.settings-update-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.settings-update-card { min-height: 198px; display: grid; grid-template-columns: 48px 1fr; grid-template-rows: 1fr auto; gap: 18px 17px; padding: 22px; border: 1px solid rgba(255,255,255,.075); border-radius: 16px; background: linear-gradient(135deg, #16171b, #131418); }
+.settings-update-card > div { align-self: center; }
+.settings-update-card h3 { margin: 0 0 8px; color: #cfcfd3; font-size: 14px; }
+.settings-update-card p { margin: 0; color: #606068; font-size: 10px; line-height: 1.75; }
+.settings-update-card small { display: block; margin-top: 10px; color: #77633f; font-size: 8px; line-height: 1.5; }
+.settings-update-card > button { grid-column: 2; min-height: 38px; padding: 0 14px; border: 1px solid rgba(255,255,255,.11); border-radius: 9px; color: #aaaab0; background: #1d1e22; font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; }
+.settings-update-card > button:disabled { opacity: .52; cursor: wait; }
+.settings-switch { display: flex !important; align-items: center; justify-content: center; gap: 9px; color: #77777e !important; }
+.settings-switch > span { position: relative; width: 33px; height: 18px; border-radius: 99px; background: #303136; transition: background .18s ease; }
+.settings-switch > span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #77777e; transition: transform .18s ease, background .18s ease; }
+.settings-switch.is-on { color: #d9a033 !important; border-color: rgba(218,158,45,.28) !important; background: rgba(218,158,45,.06) !important; }
+.settings-switch.is-on > span { background: rgba(218,158,45,.34); }
+.settings-switch.is-on > span::after { background: #e0a533; transform: translateX(15px); }
+@keyframes settings-status-pulse { 50% { opacity: .55; } }
 .settings-info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
 .settings-info-grid article { min-height: 170px; display: flex; flex-direction: column; padding: 21px; border: 1px solid rgba(255,255,255,.075); border-radius: 15px; background: #15161a; }
 .settings-info-grid article > span { color: #86652c; font-size: 8px; font-weight: 850; letter-spacing: .08em; }
@@ -452,7 +470,7 @@ img { display: block; max-width: 100%; }
   .settings-hero { min-height: 225px; padding: 48px 28px 32px; }
   .settings-content { width: min(100% - 36px, 760px); padding-top: 38px; }
   .settings-stat-grid { grid-template-columns: 1fr 1fr; }
-  .settings-action-grid, .settings-info-grid { grid-template-columns: 1fr; }
+  .settings-action-grid, .settings-update-grid, .settings-info-grid { grid-template-columns: 1fr; }
 }
 
 /* Rules and card restrictions */
@@ -549,6 +567,7 @@ img { display: block; max-width: 100%; }
   .settings-restore-preview > div:last-child { width: 100%; }
   .settings-restore-preview button { flex: 1; }
   .settings-action-card { grid-template-columns: 42px 1fr; padding: 18px; }
+  .settings-update-card { grid-template-columns: 42px 1fr; padding: 18px; }
   .settings-action-card__icon { width: 40px; height: 40px; }
   .rules-hero { min-height: 310px; align-items: flex-start; flex-direction: column; justify-content: flex-end; gap: 23px; padding: 42px 20px 27px; }
   .rules-hero__copy span { max-width: 310px; line-height: 1.65; }

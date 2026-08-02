@@ -67,6 +67,19 @@ const catalog = {
       syncedAt,
       workCode: "MST",
     },
+    {
+      cardCount: 1,
+      colors: ["緑"],
+      coverImage: "/cards/ua60bt/UA60BT_NEW-1-001.png",
+      dataUrl: "/cards/ua60bt/data.json",
+      officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570160",
+      productKey: "ua60bt",
+      productName: "新規作品タイトル【UA60BT】",
+      seriesId: "570160",
+      setCode: "UA60BT",
+      syncedAt,
+      workCode: "NEW",
+    },
   ],
 };
 
@@ -92,10 +105,12 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.match(html, /<title>UPTCG｜Union Arena 中文組牌工具<\/title>/i);
   assert.match(html, /我的置顶/);
   assert.match(html, /所有系列/);
-  assert.match(html, /共 <!-- -->56<!-- --> 个作品/);
+  assert.match(html, /共 <!-- -->57<!-- --> 个作品/);
   assert.match(html, /添加到我的置顶/);
   assert.match(html, /href="\/cards\?series=MST"/);
   assert.match(html, /href="\/cards\?series=EVA"/);
+  assert.match(html, /href="\/cards\?series=NEW"/);
+  assert.match(html, /新規作品タイトル/);
   assert.match(html, /href="\/collection"/);
   assert.match(html, /href="\/rules"/);
   assert.match(html, /href="\/settings"/);
@@ -119,11 +134,13 @@ test("server-renders the locally cached official card catalog", async () => {
   assert.match(html, /新世紀福音戰士/);
   assert.match(html, /無職轉生/);
   assert.match(html, /目前收录/);
-  assert.match(html, /<strong>2<\/strong> 个作品/);
-  assert.match(html, /<strong>295<\/strong> 张卡牌/);
+  assert.match(html, /<strong>3<\/strong> 个作品/);
+  assert.match(html, /<strong>296<\/strong> 张卡牌/);
   assert.match(html, /3<!-- --> 个产品 · <!-- -->173<!-- --> 张卡牌/);
   assert.match(html, /2<!-- --> 个产品 · <!-- -->122<!-- --> 张卡牌/);
   assert.match(html, /\/assets\/series\/EVA\.jpg/);
+  assert.match(html, /\/cards\/ua60bt\/UA60BT_NEW-1-001\.png/);
+  assert.match(html, /新規作品タイトル/);
   assert.match(html, /UNION ARENA 官方卡表/);
 });
 
@@ -167,9 +184,10 @@ test("server-renders the local card collection tracker", async () => {
   assert.match(html, /资料保存在这台 Mac 的数据库中/);
   assert.match(html, /SELECT A SERIES/);
   assert.match(html, /先选择作品/);
-  assert.match(html, /目前收录 <!-- -->2<!-- --> 个作品/);
+  assert.match(html, /目前收录 <!-- -->3<!-- --> 个作品/);
   assert.match(html, /新世紀福音戰士/);
   assert.match(html, /無職轉生/);
+  assert.match(html, /新規作品タイトル/);
   assert.match(html, /已拥有 <!-- -->0<!-- --> 种 · <!-- -->0<!-- --> 张/);
   assert.match(html, /href="\/collection"/);
   assert.doesNotMatch(html, /只看已拥有/);
@@ -186,9 +204,14 @@ test("server-renders personal settings and backup controls", async () => {
   assert.match(html, /导出完整备份/);
   assert.match(html, /从备份恢复/);
   assert.match(html, /安全合并 JSON 备份/);
+  assert.match(html, /卡牌数据更新/);
+  assert.match(html, /手动检查官方卡表/);
+  assert.match(html, /每天自动检查/);
+  assert.match(html, /立即检查更新/);
+  assert.match(html, /官方新增作品时也会自动加入作品选择页/);
   assert.match(html, /卡表与运行环境/);
-  assert.match(html, /2<!-- --> 个作品 · <!-- -->5<!-- --> 个分类/);
-  assert.match(html, /295<!-- --> 张卡牌/);
+  assert.match(html, /3<!-- --> 个作品 · <!-- -->6<!-- --> 个分类/);
+  assert.match(html, /296<!-- --> 张卡牌/);
   assert.match(html, /Docker · SQLite/);
 });
 
@@ -208,5 +231,6 @@ test("server-renders the work and color setup before the deck editor", async () 
   assert.match(html, /开始选择卡牌/);
   assert.match(html, /無職轉生/);
   assert.match(html, /新世紀福音戰士/);
+  assert.match(html, /新規作品タイトル/);
   assert.doesNotMatch(html, /牌組編輯器|保存牌組|导出图片/);
 });

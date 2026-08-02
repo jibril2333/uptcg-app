@@ -24,7 +24,7 @@ npm run start
 
 牌组功能位于 `http://localhost:3000/decks`。可新建、编辑、搜索和删除牌组，编辑器支持筛选卡牌、统计能量曲线、保存与导出 PNG。牌组、收集记录与置顶系列保存在 `.wrangler` 下的本机 SQLite 数据库中。
 
-设置页面位于 `http://localhost:3000/settings`。可查看牌组、收藏与置顶数量，导出完整 JSON 备份，并以不删除现有资料的方式安全合并恢复备份。
+设置页面位于 `http://localhost:3000/settings`。可查看牌组、收藏与置顶数量，导出完整 JSON 备份，并以不删除现有资料的方式安全合并恢复备份。也可以立即增量检查官方卡表，或开启每 24 小时自动检查；官网出现新作品、新分类或已有分类新增卡片时会自动纳入网站。
 
 ## 更新官方卡牌数据
 
@@ -38,6 +38,12 @@ npm run sync:cards
 
 ```bash
 npm run sync:all
+```
+
+检查官网全部分类，并只重新抓取新增或已变更的分类：
+
+```bash
+npm run sync:update
 ```
 
 也可以指定官方卡表中的产品编号，或用逗号同步多个产品：
@@ -76,6 +82,7 @@ docker compose logs -f uptcg
 - `/data/uptcg.sqlite`：牌组、收藏数量和置顶系列。
 - `/data/card-data`：官方卡牌 JSON 资料。
 - `/data/card-assets`：官方卡图。
+- `/data/card-data/update-settings.json`：自动更新开关、下次检查与最近结果。
 
 重建或升级容器会继续使用同一个卷。不要执行 `docker compose down -v`，
 否则会删除这些资料。普通停止服务：
@@ -93,8 +100,10 @@ UPTCG_GID="$(id -g)" \
 docker compose up --build -d
 ```
 
-自动抓取只会在卡牌存储完全不存在、未完成或损坏时运行；正常重启不会
-重复访问官网。公开分发或长期运行前请自行确认官方卡图与文本的使用授权。
+首次自动抓取只会在卡牌存储完全不存在、未完成或损坏时运行；正常重启不会
+重复下载全量资料。设置页开启自动更新后，容器会每天增量检查官网；若 Mac
+或 Docker 当时未运行，会在服务下次启动后补查。公开分发或长期运行前请
+自行确认官方卡图与文本的使用授权。
 
 ## GitHub Actions 自动部署到这台 Mac
 

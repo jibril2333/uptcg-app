@@ -1,8 +1,14 @@
 import { PinnedSeries } from "./components/PinnedSeries";
 import { SiteNavigation } from "./components/SiteNavigation";
+import { buildWorks } from "./card-data";
 import { series } from "./series-data";
 
 export default function Home() {
+  const knownCodes = new Set(series.map((item) => item.code));
+  const newlyDiscovered = buildWorks()
+    .filter((work) => !knownCodes.has(work.code))
+    .map((work) => ({ code: work.code, ext: "jpg" as const, image: work.image, name: work.name }));
+
   return (
     <div className="site-shell" id="top">
       <SiteNavigation active="home" />
@@ -19,7 +25,7 @@ export default function Home() {
         </section>
 
         <div className="content-wrap">
-          <PinnedSeries items={series} />
+          <PinnedSeries items={[...newlyDiscovered, ...series]} />
         </div>
       </main>
 
