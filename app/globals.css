@@ -375,14 +375,30 @@ img { display: block; max-width: 100%; }
 .settings-catalog-summary > strong { color: #dca230; font-size: 25px; letter-spacing: -.04em; }
 .settings-catalog-summary > strong small { color: #77633f; font-size: 9px; }
 .settings-catalog-summary > p { margin: 0; color: #62626a; font-size: 9px; }
-.settings-catalog-actions { display: flex; align-items: flex-end; gap: 9px; }
+.settings-catalog-actions { display: flex; align-items: center; gap: 9px; }
 .settings-catalog-actions > button { min-height: 38px; padding: 0 14px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; color: #aaaab0; background: #1d1e22; font: inherit; font-size: 9px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .settings-catalog-actions > button:disabled { opacity: .52; cursor: wait; }
-.settings-schedule-field { display: grid; gap: 5px; }
-.settings-schedule-field > span { color: #5f5f67; font-size: 7px; font-weight: 800; }
-.settings-schedule-field select, .settings-schedule-field input { min-width: 96px; min-height: 38px; padding: 0 9px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; outline: none; color: #aaaab0; background: #1d1e22; font: inherit; font-size: 9px; font-weight: 750; color-scheme: dark; }
-.settings-schedule-field select:focus, .settings-schedule-field input:focus { border-color: rgba(218,158,45,.42); box-shadow: 0 0 0 2px rgba(218,158,45,.06); }
-.settings-schedule-field select:disabled, .settings-schedule-field input:disabled { opacity: .52; cursor: wait; }
+.settings-schedule-control { min-height: 46px; display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid rgba(255,255,255,.085); border-radius: 11px; background: #111216; transition: border-color .18s ease, background .18s ease; }
+.settings-schedule-control.is-on { border-color: rgba(218,158,45,.22); background: rgba(36,28,15,.66); }
+.settings-schedule-toggle { min-height: 36px; display: flex; align-items: center; gap: 7px; padding: 0 9px; border: 0; border-radius: 8px; color: #77777e; background: transparent; font: inherit; cursor: pointer; white-space: nowrap; }
+.settings-schedule-toggle:hover { color: #babac0; background: rgba(255,255,255,.035); }
+.settings-schedule-toggle > span { position: relative; width: 29px; height: 16px; border-radius: 99px; background: #303136; transition: background .18s ease; }
+.settings-schedule-toggle > span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%; background: #77777e; transition: transform .18s ease, background .18s ease; }
+.settings-schedule-toggle strong { font-size: 8px; font-weight: 850; }
+.settings-schedule-toggle small { min-width: 10px; color: #55555d; font-size: 7px; font-weight: 850; }
+.settings-schedule-control.is-on .settings-schedule-toggle { color: #d9a033; }
+.settings-schedule-control.is-on .settings-schedule-toggle > span { background: rgba(218,158,45,.34); }
+.settings-schedule-control.is-on .settings-schedule-toggle > span::after { background: #e0a533; transform: translateX(13px); }
+.settings-schedule-control.is-on .settings-schedule-toggle small { color: #a97a29; }
+.settings-schedule-toggle:disabled { opacity: .52; cursor: wait; }
+.settings-schedule-divider { width: 1px; height: 22px; background: rgba(255,255,255,.075); }
+.settings-schedule-control select, .settings-schedule-control input { min-height: 36px; padding: 0 8px; border: 0; border-radius: 7px; outline: none; color: #aaaab0; background: transparent; font: inherit; font-size: 9px; font-weight: 750; color-scheme: dark; }
+.settings-schedule-control select { width: 84px; }
+.settings-schedule-control input { width: 74px; padding-right: 2px; }
+.settings-schedule-control select:hover, .settings-schedule-control input:hover, .settings-schedule-control select:focus, .settings-schedule-control input:focus { color: #d5d5d8; background: rgba(255,255,255,.035); }
+.settings-schedule-control select:disabled, .settings-schedule-control input:disabled { opacity: .52; cursor: wait; }
+.settings-schedule-time { display: flex; align-items: center; padding-right: 7px; }
+.settings-schedule-time small { color: #6b5a3b; font-size: 7px; font-weight: 850; letter-spacing: .04em; }
 .settings-switch { display: flex; align-items: center; justify-content: center; gap: 8px; color: #77777e !important; }
 .settings-switch > span { position: relative; width: 33px; height: 18px; border-radius: 99px; background: #303136; transition: background .18s ease; }
 .settings-switch > span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #77777e; transition: transform .18s ease, background .18s ease; }
@@ -578,10 +594,9 @@ img { display: block; max-width: 100%; }
   .settings-stat-grid article:nth-child(odd) { border-left: 0; }
   .settings-stat-grid article:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.065); }
   .settings-catalog-panel { align-items: stretch; flex-direction: column; gap: 14px; padding: 15px; }
-  .settings-catalog-actions { width: 100%; }
-  .settings-catalog-actions > button { flex: 1; }
-  .settings-catalog-actions { display: grid; grid-template-columns: 1fr 1fr; align-items: end; }
-  .settings-schedule-field select, .settings-schedule-field input { width: 100%; }
+  .settings-catalog-actions { width: 100%; display: grid; grid-template-columns: 1fr; }
+  .settings-catalog-actions > button { width: 100%; }
+  .settings-schedule-control { width: 100%; justify-content: space-between; }
   .settings-update-meta { align-items: flex-start; flex-direction: column; gap: 4px; }
   .settings-ntfy-panel { grid-template-columns: 1fr; }
   .settings-ntfy-actions { grid-column: auto; }
