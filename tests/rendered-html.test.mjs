@@ -207,6 +207,13 @@ test("server-renders personal settings and backup controls", async () => {
   assert.match(html, /卡牌数据/);
   assert.match(html, /立即检查更新/);
   assert.match(html, /自动更新 ·/);
+  assert.match(html, /自动更新频率/);
+  assert.match(html, /每 6 小时/);
+  assert.match(html, /每 12 小时/);
+  assert.match(html, /每天/);
+  assert.match(html, /每 2 天/);
+  assert.match(html, /每周/);
+  assert.match(html, /自动更新时间（日本时间）/);
   assert.match(html, /新作品与新分类会自动收录/);
   assert.match(html, /ntfy 通知/);
   assert.match(html, /服务器/);

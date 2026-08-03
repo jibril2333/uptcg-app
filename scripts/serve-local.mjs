@@ -217,7 +217,13 @@ async function cardUpdateResponse(request) {
 
   if (request.method === "PUT") {
     if (typeof body?.enabled !== "boolean") return jsonResponse({ error: "enabled_required" }, 400);
-    return jsonResponse(await cardUpdateManager.setAutoUpdate(body.enabled));
+    if (body.intervalHours !== undefined && typeof body.intervalHours !== "number") {
+      return jsonResponse({ error: "interval_hours_invalid" }, 400);
+    }
+    if (body.scheduleTime !== undefined && typeof body.scheduleTime !== "string") {
+      return jsonResponse({ error: "schedule_time_invalid" }, 400);
+    }
+    return jsonResponse(await cardUpdateManager.setAutoUpdate(body));
   }
 
   const started = cardUpdateManager.startUpdate("manual");

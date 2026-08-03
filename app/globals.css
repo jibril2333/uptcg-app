@@ -375,9 +375,14 @@ img { display: block; max-width: 100%; }
 .settings-catalog-summary > strong { color: #dca230; font-size: 25px; letter-spacing: -.04em; }
 .settings-catalog-summary > strong small { color: #77633f; font-size: 9px; }
 .settings-catalog-summary > p { margin: 0; color: #62626a; font-size: 9px; }
-.settings-catalog-actions { display: flex; align-items: center; gap: 9px; }
+.settings-catalog-actions { display: flex; align-items: flex-end; gap: 9px; }
 .settings-catalog-actions > button { min-height: 38px; padding: 0 14px; border: 1px solid rgba(255,255,255,.11); border-radius: 8px; color: #aaaab0; background: #1d1e22; font: inherit; font-size: 9px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .settings-catalog-actions > button:disabled { opacity: .52; cursor: wait; }
+.settings-schedule-field { display: grid; gap: 5px; }
+.settings-schedule-field > span { color: #5f5f67; font-size: 7px; font-weight: 800; }
+.settings-schedule-field select, .settings-schedule-field input { min-width: 96px; min-height: 38px; padding: 0 9px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; outline: none; color: #aaaab0; background: #1d1e22; font: inherit; font-size: 9px; font-weight: 750; color-scheme: dark; }
+.settings-schedule-field select:focus, .settings-schedule-field input:focus { border-color: rgba(218,158,45,.42); box-shadow: 0 0 0 2px rgba(218,158,45,.06); }
+.settings-schedule-field select:disabled, .settings-schedule-field input:disabled { opacity: .52; cursor: wait; }
 .settings-switch { display: flex; align-items: center; justify-content: center; gap: 8px; color: #77777e !important; }
 .settings-switch > span { position: relative; width: 33px; height: 18px; border-radius: 99px; background: #303136; transition: background .18s ease; }
 .settings-switch > span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #77777e; transition: transform .18s ease, background .18s ease; }
@@ -575,6 +580,8 @@ img { display: block; max-width: 100%; }
   .settings-catalog-panel { align-items: stretch; flex-direction: column; gap: 14px; padding: 15px; }
   .settings-catalog-actions { width: 100%; }
   .settings-catalog-actions > button { flex: 1; }
+  .settings-catalog-actions { display: grid; grid-template-columns: 1fr 1fr; align-items: end; }
+  .settings-schedule-field select, .settings-schedule-field input { width: 100%; }
   .settings-update-meta { align-items: flex-start; flex-direction: column; gap: 4px; }
   .settings-ntfy-panel { grid-template-columns: 1fr; }
   .settings-ntfy-actions { grid-column: auto; }

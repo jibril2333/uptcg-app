@@ -45,9 +45,15 @@ test("card updater persists automatic checks and hot-loads newly discovered work
   });
   await manager.initialize();
 
-  const automatic = await manager.setAutoUpdate(true);
+  const automatic = await manager.setAutoUpdate({
+    enabled: true,
+    intervalHours: 12,
+    scheduleTime: "18:30",
+  });
   assert.equal(automatic.autoUpdate, true);
-  assert.equal(automatic.nextCheckAt, "2026-08-03T00:00:00.000Z");
+  assert.equal(automatic.intervalHours, 12);
+  assert.equal(automatic.scheduleTime, "18:30");
+  assert.equal(automatic.nextCheckAt, "2026-08-02T09:30:00.000Z");
   assert.equal(manager.startUpdate("manual"), true);
   assert.equal(manager.startUpdate("manual"), false, "a second sync cannot run concurrently");
   await manager.waitForIdle();
@@ -55,7 +61,7 @@ test("card updater persists automatic checks and hot-loads newly discovered work
   const status = manager.status();
   assert.equal(status.isRunning, false);
   assert.equal(status.lastSuccessAt, "2026-08-02T00:10:00.000Z");
-  assert.equal(status.nextCheckAt, "2026-08-03T00:10:00.000Z");
+  assert.equal(status.nextCheckAt, "2026-08-02T09:30:00.000Z");
   assert.deepEqual(status.catalog, {
     cardCount: 4,
     productCount: 2,
@@ -75,6 +81,8 @@ test("card updater persists automatic checks and hot-loads newly discovered work
 
   const savedSettings = JSON.parse(await readFile(path.join(cardDataRoot, "update-settings.json"), "utf8"));
   assert.equal(savedSettings.autoUpdate, true);
+  assert.equal(savedSettings.intervalHours, 12);
+  assert.equal(savedSettings.scheduleTime, "18:30");
   const completion = JSON.parse(await readFile(path.join(cardDataRoot, ".sync-complete.json"), "utf8"));
   assert.equal(completion.productCount, 2);
   manager.close();

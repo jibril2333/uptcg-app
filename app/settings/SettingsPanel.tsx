@@ -37,8 +37,17 @@ type CardUpdateStatus = {
   lastStartedAt: string | null;
   lastSuccessAt: string | null;
   nextCheckAt: string | null;
+  scheduleTime: string;
   source: "automatic" | "manual" | null;
 };
+
+const UPDATE_INTERVAL_OPTIONS = [
+  { hours: 6, label: "每 6 小时" },
+  { hours: 12, label: "每 12 小时" },
+  { hours: 24, label: "每天" },
+  { hours: 48, label: "每 2 天" },
+  { hours: 168, label: "每周" },
+];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -211,21 +220,26 @@ export function SettingsPanel({
     }
   };
 
-  const toggleAutoUpdate = async () => {
+  const saveAutoUpdate = async ({
+    enabled = cardUpdate?.autoUpdate,
+    intervalHours = cardUpdate?.intervalHours,
+    scheduleTime = cardUpdate?.scheduleTime,
+  }: { enabled?: boolean; intervalHours?: number; scheduleTime?: string } = {}) => {
     if (!cardUpdate) return;
     setIsUpdateSaving(true);
     try {
       const response = await fetch("/api/card-update", {
-        body: JSON.stringify({ enabled: !cardUpdate.autoUpdate }),
+        body: JSON.stringify({ enabled, intervalHours, scheduleTime }),
         headers: { "content-type": "application/json" },
         method: "PUT",
       });
       if (!response.ok) throw new Error("setting_failed");
       const next = await response.json() as CardUpdateStatus;
       setCardUpdate(next);
+      const frequency = UPDATE_INTERVAL_OPTIONS.find((option) => option.hours === next.intervalHours)?.label ?? `每 ${next.intervalHours} 小时`;
       setCardUpdateNotice(next.autoUpdate
-        ? "已开启每天自动检查。Mac 与 Docker 服务运行时会按计划执行。"
-        : "已关闭自动检查，仍可随时手动更新。");
+        ? `自动更新计划已保存：${frequency}，日本时间 ${next.scheduleTime}。`
+        : "自动更新计划已保存，开启后生效。仍可随时手动更新。");
     } catch {
       setCardUpdateNotice("自动更新设置保存失败，请重试。");
     } finally {
@@ -337,13 +351,34 @@ export function SettingsPanel({
             <button className="settings-primary-button" type="button" disabled={isUpdateSaving || cardUpdate?.isRunning} onClick={() => void startCardUpdate()}>
               {cardUpdate?.isRunning ? "更新进行中…" : "立即检查更新"}
             </button>
+            <label className="settings-schedule-field">
+              <span>频率</span>
+              <select
+                aria-label="自动更新频率"
+                disabled={isUpdateSaving || !cardUpdate}
+                value={cardUpdate?.intervalHours ?? 24}
+                onChange={(event) => void saveAutoUpdate({ intervalHours: Number(event.target.value) })}
+              >
+                {UPDATE_INTERVAL_OPTIONS.map((option) => <option key={option.hours} value={option.hours}>{option.label}</option>)}
+              </select>
+            </label>
+            <label className="settings-schedule-field">
+              <span>时间 · 日本</span>
+              <input
+                aria-label="自动更新时间（日本时间）"
+                disabled={isUpdateSaving || !cardUpdate}
+                type="time"
+                value={cardUpdate?.scheduleTime ?? "04:00"}
+                onChange={(event) => void saveAutoUpdate({ scheduleTime: event.target.value })}
+              />
+            </label>
             <button
               className={`settings-switch${cardUpdate?.autoUpdate ? " is-on" : ""}`}
               type="button"
               role="switch"
               aria-checked={cardUpdate?.autoUpdate ?? false}
               disabled={isUpdateSaving || !cardUpdate}
-              onClick={() => void toggleAutoUpdate()}
+              onClick={() => void saveAutoUpdate({ enabled: !cardUpdate?.autoUpdate })}
             >
               <span aria-hidden="true" />
               自动更新 · {cardUpdate?.autoUpdate ? "开" : "关"}
