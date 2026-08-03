@@ -32,7 +32,7 @@ test("card updater persists automatic checks and hot-loads newly discovered work
     onCatalogUpdated: (next) => { catalog = next; },
     root: temporaryRoot,
     runSync: async () => {
-      currentTime = new Date("2026-08-02T00:10:00.000Z");
+      currentTime = new Date(currentTime.getTime() + 10 * 60 * 1000);
       await writeFile(path.join(cardDataRoot, "catalog.json"), JSON.stringify({
         series: [
           { cardCount: 1, productKey: "ua01bt", workCode: "OLD" },
@@ -65,7 +65,13 @@ test("card updater persists automatic checks and hot-loads newly discovered work
   assert.equal(catalog.series[1].workCode, "NEW");
   assert.equal(notifications.length, 1);
   assert.equal(notifications[0].status, "success");
+  assert.equal(notifications[0].addedCardCount, 3);
   assert.equal(notifications[0].catalog.cardCount, 4);
+
+  currentTime = new Date("2026-08-02T00:20:00.000Z");
+  assert.equal(manager.startUpdate("manual"), true);
+  await manager.waitForIdle();
+  assert.equal(notifications.length, 1, "an update without new cards must stay silent");
 
   const savedSettings = JSON.parse(await readFile(path.join(cardDataRoot, "update-settings.json"), "utf8"));
   assert.equal(savedSettings.autoUpdate, true);

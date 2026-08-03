@@ -135,10 +135,10 @@ export function createNtfyManager({ cardDataRoot, fetchImpl = fetch, now = () =>
     if (event.status === "success") {
       const catalog = event.catalog || {};
       await publish({
-        message: `已收录 ${catalog.workCount || 0} 个作品、${catalog.productCount || 0} 个分类，共 ${catalog.cardCount || 0} 张卡牌。`,
+        message: `发现 ${event.addedCardCount || 0} 张新卡片。当前已收录 ${catalog.workCount || 0} 个作品、${catalog.productCount || 0} 个分类，共 ${catalog.cardCount || 0} 张卡牌。`,
         priority: 3,
         tags: "white_check_mark,cards",
-        title: "UPTCG 卡牌数据更新完成",
+        title: "UPTCG 发现新卡片",
       });
       return;
     }

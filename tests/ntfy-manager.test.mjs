@@ -39,6 +39,18 @@ test("ntfy settings persist securely and publish with bearer authentication", as
     title: "UPTCG 测试通知",
     topic: "uptcg-alerts",
   });
+  await manager.notifyCardUpdate({
+    addedCardCount: 3,
+    catalog: { cardCount: 103, productCount: 4, workCount: 2 },
+    status: "success",
+  });
+  assert.deepEqual(JSON.parse(requests[1].init.body), {
+    message: "发现 3 张新卡片。当前已收录 2 个作品、4 个分类，共 103 张卡牌。",
+    priority: 3,
+    tags: ["white_check_mark", "cards"],
+    title: "UPTCG 发现新卡片",
+    topic: "uptcg-alerts",
+  });
   assert.equal(manager.publicSettings().lastSentAt, "2026-08-02T12:00:00.000Z");
 
   const saved = JSON.parse(await readFile(path.join(cardDataRoot, "ntfy-settings.json"), "utf8"));

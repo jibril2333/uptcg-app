@@ -119,9 +119,11 @@ export function createCardUpdateManager({
     updatePromise = (async () => {
       try {
         await saveState();
+        const previousCatalog = catalogStatus(getCatalog());
         await runSync({ cardAssetRoot, cardDataRoot, root, source });
         const catalog = JSON.parse(await readFile(path.join(cardDataRoot, "catalog.json"), "utf8"));
         if (!Array.isArray(catalog.series)) throw new Error("更新后的卡表目录格式不正确");
+        const nextCatalog = catalogStatus(catalog);
         onCatalogUpdated(catalog);
         state.lastSuccessAt = now().toISOString();
         state.lastError = null;
@@ -129,10 +131,13 @@ export function createCardUpdateManager({
           productCount: catalog.series.length,
           syncedAt: state.lastSuccessAt,
         });
-        try {
-          await notify({ status: "success", catalog: catalogStatus(catalog), source });
-        } catch (error) {
-          console.error(`ntfy notification failed: ${error instanceof Error ? error.message : error}`);
+        const addedCardCount = Math.max(0, nextCatalog.cardCount - previousCatalog.cardCount);
+        if (addedCardCount > 0) {
+          try {
+            await notify({ status: "success", addedCardCount, catalog: nextCatalog, source });
+          } catch (error) {
+            console.error(`ntfy notification failed: ${error instanceof Error ? error.message : error}`);
+          }
         }
       } catch (error) {
         state.lastError = (error instanceof Error ? error.message : String(error)).slice(0, 500);
