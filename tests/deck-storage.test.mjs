@@ -43,8 +43,8 @@ test("recovers cached decks even when the old migration marker is already set", 
     return new Response(JSON.stringify({ decks: [] }), { status: 200 });
   };
 
-  const module = await import(`../app/decks/deck-storage.ts?recovery=${Date.now()}`);
-  const decks = await module.loadDecks();
+  const deckStorage = await import(`../app/decks/deck-storage.ts?recovery=${Date.now()}`);
+  const decks = await deckStorage.loadDecks();
 
   assert.deepEqual(decks, [cachedDeck]);
   assert.deepEqual(writes, [{ decks: [cachedDeck] }]);
@@ -71,8 +71,8 @@ test("keeps the newest copy when cached and database decks share an id", async (
     return new Response(JSON.stringify({ decks: [databaseDeck] }), { status: 200 });
   };
 
-  const module = await import(`../app/decks/deck-storage.ts?newer=${Date.now()}`);
-  const decks = await module.loadDecks();
+  const deckStorage = await import(`../app/decks/deck-storage.ts?newer=${Date.now()}`);
+  const decks = await deckStorage.loadDecks();
 
   assert.deepEqual(decks, [databaseDeck]);
   assert.deepEqual(writes, []);

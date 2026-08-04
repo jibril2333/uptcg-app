@@ -13,7 +13,7 @@ COPY db ./db
 COPY public ./public
 COPY scripts ./scripts
 COPY worker ./worker
-COPY next.config.ts postcss.config.mjs tsconfig.json vite.config.ts ./
+COPY eslint.config.mjs next.config.ts postcss.config.mjs tsconfig.json vite.config.ts ./
 RUN npm run build
 
 FROM node:24-alpine AS runtime

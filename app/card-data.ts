@@ -10,7 +10,6 @@ declare global {
   // The local Docker server loads this from the persistent /data volume before
   // importing the application worker. Keeping it runtime-only prevents card
   // records from being compiled into the application image.
-  // eslint-disable-next-line no-var
   var __UPTCG_CARD_CATALOG__: UaCatalog | undefined;
 }
 
