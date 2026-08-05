@@ -40,17 +40,22 @@ export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" 
         </details>
       </header>
 
-      <aside className="sidebar">
+      <header className="spatial-chrome">
         <Brand />
-        <p className="sidebar__eyebrow">選單</p>
-        <nav className="sidebar__nav" aria-label="主要選單">
-          {navItems.map((item) => (
-            <Link className={item.id === active ? "is-active" : ""} key={item.id} href={item.href}>
-              <span aria-hidden="true">{item.icon}</span>{item.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
+        <div className="spatial-chrome__context">
+          <small>PERSONAL CARD SPACE</small>
+          <strong>{navItems.find((item) => item.id === active)?.label}</strong>
+        </div>
+        <span className="spatial-chrome__status"><i />DATA ONLINE</span>
+      </header>
+
+      <nav className="spatial-dock" aria-label="主要選單">
+        {navItems.map((item) => (
+          <Link className={item.id === active ? "is-active" : ""} key={item.id} href={item.href}>
+            <span aria-hidden="true">{item.icon}</span><small>{item.label}</small>
+          </Link>
+        ))}
+      </nav>
 
       <nav className="bottom-nav" aria-label="行動版主要選單">
         {mobileNavItems.map((item) => (
