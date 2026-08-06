@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { UaCard, UaWork } from "../cards/CardCatalog";
+import { LiquidGlassSurface } from "../components/LiquidGlassSurface";
 import { loadCollection, storeCollectionEntry, type CollectionEntries, type CollectionEntry } from "./collection-storage";
 
 const EMPTY_DATASETS: UaWork["datasets"] = [];
@@ -238,6 +239,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
           <div className="card-empty"><span>!</span><h2>读取失败</h2><p>{loadError}</p></div>
         ) : (
           <>
+            <LiquidGlassSurface className="collection-filters-glass" contentClassName="collection-filters-glass__content" cornerRadius={12} displacementScale={24} elasticity={0.035}>
             <div className="collection-filters">
               <label className="collection-search"><span>搜索卡名、编号或效果</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="输入关键词…" /></label>
               <label><span>稀有度</span><select value={rarity} onChange={(event) => setRarity(event.target.value)}><option value="all">全部</option>{rarityOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
@@ -245,6 +247,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
               <label><span>卡牌类型</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">全部</option>{categoryOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
               <label className="collection-owned-filter"><input type="checkbox" checked={ownedOnly} onChange={(event) => setOwnedOnly(event.target.checked)} /><span>只看已拥有</span></label>
             </div>
+            </LiquidGlassSurface>
 
             <div className="collection-results">
               <p><span>{activeWork?.code}</span> · 全系列 · 已拥有 <strong>{currentOwnedKinds}</strong> / {cards.length} 种，共 <strong>{currentOwnedCopies}</strong> 张 · 当前显示 {filteredCards.length} 张</p>
@@ -284,6 +287,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
 
       {selected && (
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
+          <LiquidGlassSurface className="card-modal__glass" contentClassName="card-modal__glass-content" cornerRadius={22} displacementScale={32} elasticity={0.045}>
           <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="collection-card-modal-title">
             <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
             <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
@@ -306,6 +310,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
               <a className="official-source-button" href={selected.detailOfficialUrl} target="_blank" rel="noreferrer">在 UA 官方网站查看 ↗</a>
             </div>
           </section>
+          </LiquidGlassSurface>
         </div>
       )}
     </>

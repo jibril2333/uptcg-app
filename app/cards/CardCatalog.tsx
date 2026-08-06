@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { LiquidGlassSurface } from "../components/LiquidGlassSurface";
 
 export type UaCard = {
   ap?: string;
@@ -265,6 +266,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
           </div>
         ) : (
           <>
+        <LiquidGlassSurface className="card-toolbar-glass" contentClassName="card-toolbar-glass__content" cornerRadius={12} displacementScale={24} elasticity={0.035}>
         <div className="card-toolbar">
           <div className="card-toolbar__products">
             <div className="card-toolbar__products-head">
@@ -321,6 +323,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
             <span>仅看平行卡</span>
           </label>
         </div>
+        </LiquidGlassSurface>
 
         {isLoading ? (
           <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode ?? `${selectedWork.name}全系列`} 卡牌资料…</p></div>
@@ -361,6 +364,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
 
       {selected && (
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
+          <LiquidGlassSurface className="card-modal__glass" contentClassName="card-modal__glass-content" cornerRadius={22} displacementScale={32} elasticity={0.045}>
           <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
             <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
             <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
@@ -383,6 +387,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
               <a className="official-source-button" href={selected.detailOfficialUrl} target="_blank" rel="noreferrer">在 UA 官方网站查看 ↗</a>
             </div>
           </section>
+          </LiquidGlassSurface>
         </div>
       )}
     </>
