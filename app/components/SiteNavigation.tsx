@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LiquidGlassSurface } from "./LiquidGlassSurface";
 
 const navItems = [
   { id: "home", icon: "⌂", label: "首頁", href: "/" },
@@ -40,22 +41,29 @@ export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" 
         </details>
       </header>
 
-      <header className="spatial-chrome">
-        <Brand />
-        <div className="spatial-chrome__context">
-          <small>PERSONAL CARD SPACE</small>
-          <strong>{navItems.find((item) => item.id === active)?.label}</strong>
-        </div>
-        <span className="spatial-chrome__status"><i />DATA ONLINE</span>
-      </header>
-
-      <nav className="spatial-dock" aria-label="主要選單">
-        {navItems.map((item) => (
-          <Link className={item.id === active ? "is-active" : ""} key={item.id} href={item.href}>
-            <span aria-hidden="true">{item.icon}</span><small>{item.label}</small>
-          </Link>
-        ))}
-      </nav>
+      <LiquidGlassSurface
+        className="spatial-sidebar-glass"
+        contentClassName="spatial-sidebar-glass__content"
+        cornerRadius={0}
+        displacementScale={20}
+        elasticity={0.03}
+      >
+        <aside className="spatial-sidebar">
+          <Brand />
+          <div className="spatial-sidebar__context">
+            <small>PERSONAL CARD SPACE</small>
+            <strong>{navItems.find((item) => item.id === active)?.label}</strong>
+          </div>
+          <nav className="spatial-sidebar__nav" aria-label="主要選單">
+          {navItems.map((item) => (
+            <Link className={item.id === active ? "is-active" : ""} key={item.id} href={item.href}>
+                <span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong>
+            </Link>
+          ))}
+          </nav>
+          <span className="spatial-sidebar__status"><i />DATA ONLINE</span>
+        </aside>
+      </LiquidGlassSurface>
 
       <nav className="bottom-nav" aria-label="行動版主要選單">
         {mobileNavItems.map((item) => (
