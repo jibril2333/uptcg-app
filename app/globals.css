@@ -1123,6 +1123,78 @@ body::before {
 .spatial-home__welcome h1 { margin: 0; font-size: clamp(38px, 5.2vw, 66px); letter-spacing: -.06em; line-height: .98; }
 .spatial-home__welcome h1 span { color: transparent; background: linear-gradient(90deg, #cad4ff, #7584ed 50%, #63cdbc); background-clip: text; -webkit-background-clip: text; }
 .spatial-home__welcome small { display: block; margin-top: 16px; color: #66728a; font-size: 11px; }
+.liquid-glass-accent {
+  --glass-x: 50%;
+  --glass-y: 50%;
+  --glass-rotate-x: 0deg;
+  --glass-rotate-y: 0deg;
+  position: relative;
+  width: min(264px, 100%);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 25px auto 0;
+  padding: 10px 12px 10px 18px;
+  overflow: hidden;
+  isolation: isolate;
+  contain: layout paint style;
+  border: 1px solid rgba(196, 211, 255, .2);
+  border-radius: 19px;
+  color: #eef2ff;
+  text-align: left;
+  background: linear-gradient(135deg, rgba(43, 53, 91, .56), rgba(16, 25, 46, .48));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .27), inset 0 1px rgba(255, 255, 255, .08);
+  -webkit-backdrop-filter: blur(8px) saturate(1.18);
+  backdrop-filter: blur(8px) saturate(1.18);
+  transform: perspective(600px) rotateX(var(--glass-rotate-x)) rotateY(var(--glass-rotate-y));
+  transition: transform 160ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.liquid-glass-accent__filters { position: absolute; width: 0; height: 0; pointer-events: none; }
+.liquid-glass-accent__surface,
+.liquid-glass-accent__shine { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
+.liquid-glass-accent__surface {
+  inset: -6px;
+  opacity: .58;
+  background:
+    radial-gradient(circle at var(--glass-x) var(--glass-y), rgba(150, 246, 231, .36), transparent 25%),
+    linear-gradient(115deg, rgba(119, 133, 245, .16), transparent 42%, rgba(92, 213, 195, .13));
+}
+.liquid-glass-accent__shine {
+  opacity: .38;
+  background:
+    radial-gradient(circle at var(--glass-x) var(--glass-y), rgba(255, 255, 255, .7), transparent 9%, rgba(132, 164, 255, .2) 19%, transparent 34%),
+    linear-gradient(110deg, rgba(255, 255, 255, .14), transparent 25% 70%, rgba(114, 225, 207, .12));
+  transition: opacity 180ms ease;
+}
+.liquid-glass-accent__copy { min-width: 0; display: grid; gap: 3px; }
+.liquid-glass-accent__copy small { margin: 0; color: #8290ad; font-size: 7px; font-weight: 850; letter-spacing: .17em; }
+.liquid-glass-accent__copy strong { color: #edf2ff; font-size: 12px; font-weight: 760; letter-spacing: .02em; }
+.liquid-glass-accent__arrow {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+  border: 1px solid rgba(178, 194, 245, .2);
+  border-radius: 12px;
+  color: #92e0d5;
+  background: rgba(89, 105, 181, .18);
+  transition: transform 180ms ease, background 180ms ease;
+}
+.liquid-glass-accent:hover,
+.liquid-glass-accent:focus-visible {
+  border-color: rgba(137, 222, 212, .47);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .34), 0 0 28px rgba(91, 181, 180, .12), inset 0 1px rgba(255, 255, 255, .13);
+}
+.liquid-glass-accent:hover .liquid-glass-accent__arrow,
+.liquid-glass-accent:focus-visible .liquid-glass-accent__arrow { transform: translate(2px, -2px); background: rgba(83, 182, 169, .2); }
+.liquid-glass-accent:focus-visible { outline: 2px solid #7ad8cb; outline-offset: 3px; }
+.liquid-glass-accent[data-interactive="false"] { transform: none; }
+.liquid-glass-accent[data-interactive="false"] .liquid-glass-accent__surface { filter: none !important; }
+.liquid-glass-accent[data-active="true"] { will-change: transform; }
+.liquid-glass-accent[data-active="true"] .liquid-glass-accent__shine { opacity: .7; }
 .spatial-home__windows {
   width: min(1120px, 100%);
   display: grid;
@@ -1336,6 +1408,8 @@ body::before {
 @media (max-width: 650px) {
   .spatial-home { min-height: 0; padding: 46px 16px 30px; }
   .spatial-home__welcome h1 { font-size: 38px; }
+  .liquid-glass-accent { min-height: 56px; margin-top: 21px; border-radius: 17px; transform: none; }
+  .liquid-glass-accent__surface { filter: none !important; }
   .spatial-home__windows { grid-template-columns: 1fr; gap: 12px; margin-top: 34px; }
   .spatial-window--cards { grid-row: auto; }
   .spatial-window { min-height: 235px; border-radius: 17px; }
@@ -1344,4 +1418,10 @@ body::before {
   .spatial-window--decks, .spatial-window--collection { min-height: 210px; }
   .spatial-deck-orbit, .spatial-collection-bars { height: 105px; }
   .series-library__header, .deck-page-hero, .collection-hero, .settings-hero, .rules-hero { margin: 8px 9px 0; border-radius: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-accent,
+  .liquid-glass-accent__arrow { transition: none; transform: none; }
+  .liquid-glass-accent__surface { filter: none !important; }
 }

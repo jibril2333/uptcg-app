@@ -114,6 +114,8 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.match(html, /href="\/collection"/);
   assert.match(html, /href="\/rules"/);
   assert.match(html, /href="\/settings"/);
+  assert.match(html, /CARD DATABASE/);
+  assert.match(html, /進入官方卡表/);
   assert.match(html, /我的收集/);
   assert.match(html, /規則與禁卡/);
   assert.match(html, /設定/);

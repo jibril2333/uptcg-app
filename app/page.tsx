@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { LiquidGlassAccent } from "./components/LiquidGlassAccent";
 import { PinnedSeries } from "./components/PinnedSeries";
 import { SiteNavigation } from "./components/SiteNavigation";
 import { buildWorks } from "./card-data";
@@ -24,6 +25,7 @@ export default function Home() {
             <p>YOUR UNION ARENA SPACE</p>
             <h1>你的卡牌，<br /><span>都在這裡。</span></h1>
             <small>查卡、組牌與收藏，以更直覺的方式集中管理。</small>
+            <LiquidGlassAccent href="/cards" />
           </header>
 
           <div className="spatial-home__windows">
