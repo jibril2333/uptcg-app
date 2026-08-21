@@ -13,6 +13,7 @@
     "sync:cards": "node scripts/sync-ua-cards.mjs",
     "sync:all": "node scripts/sync-ua-cards.mjs --all",
     "sync:update": "node scripts/sync-ua-cards.mjs --all --refresh",
+    "notion:watch": "node scripts/notion-claude-watcher.mjs",
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
