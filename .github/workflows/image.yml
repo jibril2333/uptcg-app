@@ -1,0 +1,172 @@
+name: Build image and update NAS
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".gitignore"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag
+        required: false
+        default: latest
+
+concurrency:
+  group: ghcr-image
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            arch: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            UPTCG_GIT_SHA=${{ github.sha }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache-${{ matrix.arch }}
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache-${{ matrix.arch }},mode=max
+
+      - name: Save image digest
+        run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/$(echo '${{ steps.build.outputs.digest }}' | sed 's|sha256:||')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.arch }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  merge:
+    name: Publish multi-architecture image
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digest-*
+          merge-multiple: true
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manifest list
+        run: |
+          cd /tmp/digests
+          TAG="${{ inputs.tag || 'latest' }}"
+          # Each digest filename intentionally becomes a separate argument.
+          # shellcheck disable=SC2046
+          docker buildx imagetools create \
+            -t "${{ env.IMAGE }}:$TAG" \
+            -t "${{ env.IMAGE }}:${{ github.sha }}" \
+            $(printf "${{ env.IMAGE }}@sha256:%s " *)
+          docker buildx imagetools inspect "${{ env.IMAGE }}:$TAG"
+
+  deploy-nas:
+    name: Ask NAS to pull the image
+    needs: merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check deployment configuration
+        id: check
+        run: |
+          if { [ -n "${{ secrets.TS_OAUTH_CLIENT_ID }}" ] || [ -n "${{ secrets.TS_AUTHKEY }}" ]; } \
+             && [ -n "${{ secrets.NAS_WATCHTOWER_TOKEN }}" ] \
+             && [ -n "${{ secrets.NAS_HOST || vars.NAS_HOST }}" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "NAS push is not configured; the image is still available in GHCR."
+          fi
+
+      - name: Join the tailnet
+        if: steps.check.outputs.ok == 'true'
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TS_AUTHKEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --accept-dns=true
+          ping: ${{ secrets.NAS_HOST || vars.NAS_HOST }}
+
+      - name: Ask Watchtower to update labelled containers
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          NAS="${{ secrets.NAS_HOST || vars.NAS_HOST }}"
+          PORT="${{ vars.NAS_WATCHTOWER_PORT || '8080' }}"
+          curl -fsS --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.NAS_WATCHTOWER_TOKEN }}" \
+            "http://$NAS:$PORT/v1/update"
+          echo
+
+      - name: Wait for this revision
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          NAS="${{ secrets.NAS_HOST || vars.NAS_HOST }}"
+          PORT="${{ vars.NAS_APP_PORT || '3002' }}"
+          WANT="${{ github.sha }}"
+          for i in $(seq 1 60); do
+            GOT="$(curl -fsS --max-time 5 "http://$NAS:$PORT/api/health" \
+              | sed -n 's/.*"version":"\([^"]*\)".*/\1/p' || true)"
+            if [ "$GOT" = "$WANT" ]; then
+              echo "NAS is serving $WANT"
+              exit 0
+            fi
+            [ $((i % 6)) -eq 0 ] && echo "still on '${GOT:-unknown}', waiting for $WANT…"
+            sleep 5
+          done
+          echo "NAS did not report $WANT within 300 seconds (last saw '${GOT:-unknown}')." >&2
+          exit 1

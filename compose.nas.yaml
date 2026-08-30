@@ -1,0 +1,57 @@
+# Production deployment on TrueNAS SCALE.
+#
+# GitHub-hosted runners build the multi-architecture image and publish it to
+# GHCR. The NAS only pulls a finished image; it never executes repository code
+# through a self-hosted Actions runner.
+#
+# UPTCG_DATA_DIR must be a local ZFS dataset owned by UPTCG_UID:UPTCG_GID.
+# Never place SQLite on an SMB/NFS mount. An empty directory is supported: the
+# container downloads the official card catalog and images on first startup.
+#
+# This stack intentionally does not start another Watchtower. The NAS already
+# has one label-enabled Watchtower shared by card-deck-builder and Bandai30;
+# the label below opts UPTCG into that same updater.
+
+name: uptcg
+
+services:
+  uptcg:
+    image: ghcr.io/jibril2333/uptcg-app:latest
+    container_name: uptcg-app
+    restart: unless-stopped
+    init: true
+    user: "${UPTCG_UID:-568}:${UPTCG_GID:-568}"
+    ports:
+      - "${UPTCG_PORT:-3002}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      TZ: "${UPTCG_TZ:-Asia/Tokyo}"
+      UPTCG_DB_PATH: /data/uptcg.sqlite
+      UPTCG_CARD_DATA_DIR: /data/card-data
+      UPTCG_CARD_ASSET_DIR: /data/card-assets
+    volumes:
+      - "${UPTCG_DATA_DIR:?set UPTCG_DATA_DIR to the local ZFS dataset for UPTCG}:/data"
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+      homepage.group: "本地服务"
+      homepage.name: "UPTCG"
+      homepage.icon: "mdi-cards-playing-outline"
+      homepage.href: "http://${UPTCG_LAN_HOST:-nas.local}:${UPTCG_PORT:-3002}"
+      homepage.description: "UNION ARENA 卡表、牌组与收藏管理"
+      homepage.showStats: "true"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # A fresh volume performs the full official-card sync before the server
+      # starts. Existing migrated data normally becomes ready in seconds.
+      start_period: 2h
+    stop_grace_period: 20s

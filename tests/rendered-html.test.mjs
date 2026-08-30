@@ -126,6 +126,25 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|火焰樹|貓貓TCG/);
 });
 
+test("health endpoint verifies the database and loaded card catalog", async (t) => {
+  const previousDatabase = globalThis.__UPTCG_DB__;
+  globalThis.__UPTCG_DB__ = {
+    prepare(sql) {
+      assert.match(sql, /sqlite_master/);
+      return { first: async () => null };
+    },
+  };
+  t.after(() => { globalThis.__UPTCG_DB__ = previousDatabase; });
+
+  const response = await render("/api/health");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    productCount: 6,
+    version: "development",
+  });
+});
+
 test("server-renders the locally cached official card catalog", async () => {
   const response = await render("/cards");
   assert.equal(response.status, 200);

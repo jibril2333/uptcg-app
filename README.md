@@ -92,7 +92,7 @@ docker compose logs -f uptcg
 docker compose down
 ```
 
-这台 Mac 的自动部署继续使用宿主机目录，方便直接备份 SQLite 与卡表：
+在这台 Mac 上手动运行时，可以使用宿主机目录，方便直接备份 SQLite 与卡表：
 
 ```bash
 UPTCG_DATA_DIR="$HOME/Library/Application Support/UPTCG/data" \
@@ -107,38 +107,18 @@ docker compose up --build -d
 服务下次启动后补查。公开分发或长期运行前请
 自行确认官方卡图与文本的使用授权。
 
-## GitHub Actions 自动部署到这台 Mac
+## GitHub Actions 与 TrueNAS 部署
 
-仓库使用这台 Mac 上的 self-hosted runner：
+生产环境使用 GitHub 托管 runner 构建 `linux/amd64`、`linux/arm64` 两种
+架构的镜像，发布为 `ghcr.io/jibril2333/uptcg-app:latest`。TrueNAS 通过
+`compose.nas.yaml` 运行镜像，并由现有的 label-enabled Watchtower 自动更新；
+NAS 上不安装 self-hosted runner，也不会执行仓库中的代码。
 
-```text
-名称：uptcg-mac-mini
-标签：self-hosted / macOS / ARM64 / uptcg
-目录：~/actions-runner-uptcg
-```
+镜像仍然只包含应用。SQLite、官方卡表、图片和通知设置全部保存在 NAS 的本地
+ZFS dataset 中。空 dataset 首次启动会自动同步完整官方资料。
 
-每次推送 `main` 后，`.github/workflows/deploy.yml` 会自动：
-
-1. 在本机 runner 工作区检出应用代码。
-2. 执行 `docker compose build` 构建不含卡表和卡图的 `uptcg-app:prod`。
-3. 停用原先直接运行 Node 的 `com.rayne.uptcg-local` LaunchAgent。
-4. 备份现有 SQLite 数据库并用新镜像重建容器。
-5. 检查 `http://127.0.0.1:3002/`，成功后清理悬空镜像。
-
-workflow 只接受 `push` 到 `main` 或手动触发，绝不能增加
-`pull_request` 触发器，否则不受信任的 PR 代码可能在这台 Mac 上执行。
-连续推送会排队部署，不会同时操作同一个容器。
-
-日常更新只需要：
-
-```bash
-git push origin main
-gh run watch
-```
-
-不再依赖 GHCR、SSH 或远程服务器。runner 作为用户级 LaunchAgent
-常驻并主动向 GitHub 拉取任务；Cloudflare Tunnel 继续访问本机的
-`3002` 端口。Docker Desktop 必须处于运行状态。
+完整的首次安装、个人资料转移、健康检查、Cloudflare 切换和回滚顺序请参阅
+[将 UPTCG 从 Mac 迁移到 TrueNAS](docs/nas-migration.md)。
 
 仓库不保存卡牌 JSON、卡图或卡图归档。普通克隆和 Docker 镜像都只包含
 应用代码；首次启动会从官方卡表建立持久化卡牌资料，源码目录中的手动同步
