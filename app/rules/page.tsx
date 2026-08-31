@@ -152,7 +152,7 @@ export default function RulesPage() {
                     <tr key={card.fullCardNo}>
                       <td>
                         <div className="restriction-card">
-                          <img src={card.image} alt="" />
+                          <img src={card.image} alt="" referrerPolicy="no-referrer" />
                           <span><strong>{card.name}</strong><small>{card.shortCardNo}</small></span>
                         </div>
                       </td>

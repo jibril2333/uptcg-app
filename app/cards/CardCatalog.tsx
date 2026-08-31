@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { cardImageUrl } from "../card-image";
 
 export type UaCard = {
   ap?: string;
@@ -13,6 +14,7 @@ export type UaCard = {
   generatedEnergy?: string[];
   image: string;
   imageFileName: string;
+  imageOfficialUrl?: string;
   name: string;
   needEnergy?: string;
   product?: string;
@@ -250,7 +252,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
                 const cardCount = work.datasets.reduce((total, dataset) => total + dataset.cardCount, 0);
                 return (
                   <button className="series-choice" key={work.code} type="button" onClick={() => selectWork(work)} aria-label={`查看${work.name}卡表`}>
-                    <img src={work.image} alt="" />
+                    <img src={work.image} alt="" referrerPolicy="no-referrer" />
                     <span className="series-choice__shade" />
                     <span className="series-choice__code">{work.code}</span>
                     <span className="series-choice__meta">
@@ -340,7 +342,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
             {filteredCards.map((card) => (
               <button className="official-card" data-color={cardColor(card)} key={card.image} type="button" onClick={() => setSelected(card)}>
                 <span className="official-card__image">
-                  <img src={card.image} alt={`${card.cardNo} ${card.name}`} loading="lazy" />
+                  <img src={cardImageUrl(card)} alt={`${card.cardNo} ${card.name}`} loading="lazy" referrerPolicy="no-referrer" />
                   {card.rarity && <span className="official-card__rarity">{card.rarity}</span>}
                 </span>
                 <span className="official-card__meta">
@@ -363,7 +365,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
           <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
             <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
-            <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
+            <div className="card-modal__image"><img src={cardImageUrl(selected)} alt={`${selected.cardNo} ${selected.name}`} referrerPolicy="no-referrer" /></div>
             <div className="card-modal__content">
               <p className="card-modal__eyebrow">{selected.cardNo} · {selected.rarity || "-"}</p>
               <h2 id="card-modal-title">{selected.name}</h2>

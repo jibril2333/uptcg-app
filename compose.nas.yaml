@@ -6,7 +6,7 @@
 #
 # UPTCG_DATA_DIR must be a local ZFS dataset owned by UPTCG_UID:UPTCG_GID.
 # Never place SQLite on an SMB/NFS mount. An empty directory is supported: the
-# container downloads the official card catalog and images on first startup.
+# container downloads official card metadata on first startup; card images stay remote.
 #
 # This stack intentionally does not start another Watchtower. The NAS already
 # has one label-enabled Watchtower shared by card-deck-builder and Bandai30;

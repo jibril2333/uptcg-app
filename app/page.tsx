@@ -37,6 +37,7 @@ export default function Home() {
                     key={item.code}
                     src={item.image ?? `/assets/series/${item.code}.${item.ext}`}
                     alt=""
+                    referrerPolicy="no-referrer"
                     style={{ "--spatial-card-index": index } as CSSProperties}
                   />
                 ))}

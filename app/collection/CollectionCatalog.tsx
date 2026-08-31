@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { cardImageUrl } from "../card-image";
 import type { UaCard, UaWork } from "../cards/CardCatalog";
 import { loadCollection, storeCollectionEntry, type CollectionEntries, type CollectionEntry } from "./collection-storage";
 
@@ -217,7 +218,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
                 const owned = collectionByWork.get(work.code) ?? { copies: 0, kinds: 0 };
                 return (
                   <button className="series-choice" key={work.code} type="button" onClick={() => selectWork(work.code)} aria-label={`查看${work.name}收藏`}>
-                    <img src={work.image} alt="" />
+                    <img src={work.image} alt="" referrerPolicy="no-referrer" />
                     <span className="series-choice__shade" />
                     <span className="series-choice__code">{work.code}</span>
                     <span className="series-choice__meta">
@@ -259,7 +260,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
                     <article className={`collection-card${count ? " is-owned" : ""}`} data-color={cardColor(card)} key={card.image}>
                       <div className="collection-card__image">
                         <button className="collection-card__detail-trigger" type="button" onClick={() => setSelected(card)} aria-label={`查看${card.name}卡牌详情`}>
-                          <img src={card.image} alt={`${card.cardNo} ${card.name}`} loading="lazy" />
+                          <img src={cardImageUrl(card)} alt={`${card.cardNo} ${card.name}`} loading="lazy" referrerPolicy="no-referrer" />
                         </button>
                         {count > 0 && <span className="collection-card__owned">已拥有 ×{count}</span>}
                         <div className="collection-card__controls" aria-label={`${card.name}拥有数量`}>
@@ -286,7 +287,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
           <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="collection-card-modal-title">
             <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
-            <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
+            <div className="card-modal__image"><img src={cardImageUrl(selected)} alt={`${selected.cardNo} ${selected.name}`} referrerPolicy="no-referrer" /></div>
             <div className="card-modal__content">
               <p className="card-modal__eyebrow">{selected.cardNo} · {selected.rarity || "-"}</p>
               <h2 id="collection-card-modal-title">{selected.name}</h2>

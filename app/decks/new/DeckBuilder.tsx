@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { UaCard, UaWork } from "../../cards/CardCatalog";
+import { cardImageUrl, exportableCardImageUrl } from "../../card-image";
 import { loadDecks, storeDecks, type SavedDeck, type SavedDeckCard } from "../deck-storage";
 
 const DECK_COLORS = [
@@ -280,7 +281,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
     setNotice("正在生成牌组图片…");
     const expanded = deckItems.flatMap((item) => Array.from({ length: item.count }, () => item.card));
     try {
-      const images = await Promise.all(expanded.map((card) => loadImage(card.image)));
+      const images = await Promise.all(expanded.map((card) => loadImage(exportableCardImageUrl(card))));
       const canvas = document.createElement("canvas");
       canvas.width = 1680;
       canvas.height = 1120;
@@ -353,7 +354,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
                   aria-pressed={work.code === activeWorkCode}
                   onClick={() => selectSetupWork(work.code)}
                 >
-                  <img src={work.image} alt="" loading="lazy" />
+                  <img src={work.image} alt="" loading="lazy" referrerPolicy="no-referrer" />
                   <span className="deck-setup-work__shade" />
                   <span className="deck-setup-work__meta"><strong>{work.name}</strong><small>{work.code} · {work.datasets.reduce((total, dataset) => total + dataset.cardCount, 0)} 张</small></span>
                   <span className="deck-setup-work__check">✓</span>
@@ -435,7 +436,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
               const quantity = deckEntries[card.image]?.count || 0;
               return (
                 <button className="builder-card" data-color={cardColor(card)} key={card.image} type="button" onClick={() => addCard(card)} aria-label={`加入 ${card.name}`}>
-                  <span className="builder-card__image"><img src={card.image} alt={`${card.cardNo} ${card.name}`} loading="lazy" /><span className="builder-card__add">＋</span>{quantity > 0 && <span className="builder-card__quantity">×{quantity}</span>}</span>
+                  <span className="builder-card__image"><img src={cardImageUrl(card)} alt={`${card.cardNo} ${card.name}`} loading="lazy" referrerPolicy="no-referrer" /><span className="builder-card__add">＋</span>{quantity > 0 && <span className="builder-card__quantity">×{quantity}</span>}</span>
                   <span className="builder-card__meta"><strong>{card.name}</strong><small>{card.cardNo} · {card.rarity}</small></span>
                 </button>
               );
@@ -459,7 +460,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
           <div className="deck-editor__list-heading"><strong>牌组内容</strong><span>{totalCount ? "点击卡牌减少数量" : "从左侧选择卡牌"}</span></div>
           {deckItems.length ? (
             <div className="deck-editor-card-grid">
-              {deckItems.map((item) => <button key={item.card.image} type="button" onClick={() => removeCard(item.card.image)} aria-label={`移除一张 ${item.card.name}`}><img src={item.card.image} alt="" /><span>×{item.count}</span></button>)}
+              {deckItems.map((item) => <button key={item.card.image} type="button" onClick={() => removeCard(item.card.image)} aria-label={`移除一张 ${item.card.name}`}><img src={cardImageUrl(item.card)} alt="" referrerPolicy="no-referrer" /><span>×{item.count}</span></button>)}
             </div>
           ) : (
             <div className="deck-editor-empty"><span>♧</span><p>牌组还是空的</p><small>点击左侧卡牌加入牌组</small></div>

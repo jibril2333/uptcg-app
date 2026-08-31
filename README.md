@@ -20,7 +20,7 @@ npm run start
 
 默认开发地址为 `http://localhost:3000`。
 
-官方卡牌目录位于 `http://localhost:3000/cards`。当前已缓存 UNION ARENA 官方卡表中的 56 个作品、168 个分类数据组，共 10,265 张卡牌资料与本地卡图。宣传卡与限定商品卡会按卡号中的作品代码归入对应作品，通用 AP 卡单独归入“UNION ARENA 通用卡”。首页的每张系列卡会直接打开对应作品的卡表。
+官方卡牌目录位于 `http://localhost:3000/cards`。当前会同步 UNION ARENA 官方卡表中的作品、分类与卡牌资料，卡面由浏览器直接从 UA 官网加载，不在本机保存副本。宣传卡与限定商品卡会按卡号中的作品代码归入对应作品，通用 AP 卡单独归入“UNION ARENA 通用卡”。首页的每张系列卡会直接打开对应作品的卡表。
 
 牌组功能位于 `http://localhost:3000/decks`。可新建、编辑、搜索和删除牌组，编辑器支持筛选卡牌、统计能量曲线、保存与导出 PNG。牌组、收集记录与置顶系列保存在 `.wrangler` 下的本机 SQLite 数据库中。
 
@@ -53,11 +53,11 @@ npm run sync:cards -- --series=570154
 npm run sync:cards -- --series=570044,570144,570154
 ```
 
-直接运行同步命令时，资料会写入被 Git 忽略的 `data/cards`，图片会缓存到
-`public/cards/<分类编号>`。Docker 首次启动则会把同样的内容写入持久化
-卷中的 `/data/card-data` 与 `/data/card-assets`。混合宣传卡与限定商品
-卡池会自动按作品代码拆分。公开部署前请自行确认官方卡图与文本的转载
-授权范围。
+直接运行同步命令时，资料会写入被 Git 忽略的 `data/cards`，供网页读取的
+产品 JSON 会写入 `public/cards/<分类编号>/data.json`。Docker 首次启动则会把
+同样的 JSON 写入持久化卷中的 `/data/card-data` 与 `/data/card-assets`；后者
+只是网页路由使用的 JSON 镜像，不包含卡图。混合宣传卡与限定商品卡池会自动
+按作品代码拆分。卡面显示时由浏览器直接访问 UA 官网。
 
 如果要让同一局域网内的其他设备访问开发版：
 
@@ -68,8 +68,9 @@ npm run dev -- --hostname 0.0.0.0
 ## Docker
 
 Docker 镜像只包含应用程序，不包含卡牌资料或卡图。第一次启动时如果
-持久化卷里没有完整卡表，容器会自动从 UNION ARENA 官方卡表下载全部
-资料与图片；同步中断后重启容器会继续补齐。首次同步期间可查看进度：
+持久化卷里没有完整卡表，容器会自动从 UNION ARENA 官方卡表同步全部
+文本资料；卡面始终由浏览器直接从 UA 官网加载，不会下载进卷。同步中断后
+重启容器会继续补齐。首次同步期间可查看进度：
 
 ```bash
 docker compose up --build -d
@@ -81,7 +82,7 @@ docker compose logs -f uptcg
 
 - `/data/uptcg.sqlite`：牌组、收藏数量和置顶系列。
 - `/data/card-data`：官方卡牌 JSON 资料。
-- `/data/card-assets`：官方卡图。
+- `/data/card-assets`：供网页读取的产品 JSON 镜像，不包含卡图。
 - `/data/card-data/update-settings.json`：自动更新开关、下次检查与最近结果。
 - `/data/card-data/ntfy-settings.json`：ntfy 通知配置与访问令牌（不会写入镜像或个人资料备份）。
 
@@ -104,8 +105,7 @@ docker compose up --build -d
 首次自动抓取只会在卡牌存储完全不存在、未完成或损坏时运行；正常重启不会
 重复下载全量资料。设置页开启自动更新后，可以选择每 6 小时、12 小时、每天、
 每 2 天或每周，并指定日本时间的执行时刻；若 Mac 或 Docker 当时未运行，会在
-服务下次启动后补查。公开分发或长期运行前请
-自行确认官方卡图与文本的使用授权。
+服务下次启动后补查。请注意，官网不可访问时卡面也会暂时无法显示。
 
 ## GitHub Actions 与 TrueNAS 部署
 
@@ -114,15 +114,15 @@ docker compose up --build -d
 `compose.nas.yaml` 运行镜像，并由现有的 label-enabled Watchtower 自动更新；
 NAS 上不安装 self-hosted runner，也不会执行仓库中的代码。
 
-镜像仍然只包含应用。SQLite、官方卡表、图片和通知设置全部保存在 NAS 的本地
-ZFS dataset 中。空 dataset 首次启动会自动同步完整官方资料。
+镜像仍然只包含应用。SQLite、官方卡表 JSON 和通知设置保存在 NAS 的本地
+ZFS dataset 中，卡图不落盘。空 dataset 首次启动会自动同步完整官方资料。
 
 完整的首次安装、个人资料转移、健康检查、Cloudflare 切换和回滚顺序请参阅
 [将 UPTCG 从 Mac 迁移到 TrueNAS](docs/nas-migration.md)。
 
 仓库不保存卡牌 JSON、卡图或卡图归档。普通克隆和 Docker 镜像都只包含
-应用代码；首次启动会从官方卡表建立持久化卡牌资料，源码目录中的手动同步
-缓存也会被 Git 忽略。
+应用代码；首次启动会从官方卡表建立持久化 JSON 资料，卡面由浏览器直接访问
+官网，源码目录中的手动同步缓存也会被 Git 忽略。
 
 ## Linear → Codex 开发
 
