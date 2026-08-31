@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { cardImageUrl } from "../card-image";
 import { deckCardCount, loadDecks, storeDecks, type SavedDeck } from "./deck-storage";
 
 export function DeckLibrary() {
@@ -70,7 +71,7 @@ export function DeckLibrary() {
                 <article className="saved-deck-card" key={deck.id}>
                   <a className="saved-deck-card__cover" href={`/decks/new?id=${encodeURIComponent(deck.id)}&series=${deck.seriesCode}`}>
                     {previews.length ? previews.map((item, index) => (
-                      <img key={`${item.card.image}-${index}`} src={item.card.image} alt="" style={{ "--deck-card-index": index } as CSSProperties} />
+                      <img key={`${item.card.image}-${index}`} src={cardImageUrl(item.card)} alt="" referrerPolicy="no-referrer" style={{ "--deck-card-index": index } as CSSProperties} />
                     )) : <span>UP</span>}
                     <span className="saved-deck-card__series">{deck.seriesCode}</span>
                   </a>

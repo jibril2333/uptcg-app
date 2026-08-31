@@ -70,7 +70,7 @@ const catalog = {
     {
       cardCount: 1,
       colors: ["緑"],
-      coverImage: "/cards/ua60bt/UA60BT_NEW-1-001.png",
+      coverImage: "https://www.unionarena-tcg.com/jp/images/cardlist/card/UA60BT_NEW-1-001.png",
       dataUrl: "/cards/ua60bt/data.json",
       officialListUrl: "https://www.unionarena-tcg.com/jp/cardlist/?search=true&series=570160",
       productKey: "ua60bt",
@@ -126,6 +126,25 @@ test("server-renders the UPTCG homepage without the banner carousel", async () =
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|火焰樹|貓貓TCG/);
 });
 
+test("health endpoint verifies the database and loaded card catalog", async (t) => {
+  const previousDatabase = globalThis.__UPTCG_DB__;
+  globalThis.__UPTCG_DB__ = {
+    prepare(sql) {
+      assert.match(sql, /sqlite_master/);
+      return { first: async () => null };
+    },
+  };
+  t.after(() => { globalThis.__UPTCG_DB__ = previousDatabase; });
+
+  const response = await render("/api/health");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    productCount: 6,
+    version: "development",
+  });
+});
+
 test("server-renders the locally cached official card catalog", async () => {
   const response = await render("/cards");
   assert.equal(response.status, 200);
@@ -141,7 +160,7 @@ test("server-renders the locally cached official card catalog", async () => {
   assert.match(html, /3<!-- --> 个产品 · <!-- -->173<!-- --> 张卡牌/);
   assert.match(html, /2<!-- --> 个产品 · <!-- -->122<!-- --> 张卡牌/);
   assert.match(html, /\/assets\/series\/EVA\.jpg/);
-  assert.match(html, /\/cards\/ua60bt\/UA60BT_NEW-1-001\.png/);
+  assert.match(html, /https:\/\/www\.unionarena-tcg\.com\/jp\/images\/cardlist\/card\/UA60BT_NEW-1-001\.png/);
   assert.match(html, /新規作品タイトル/);
   assert.match(html, /UNION ARENA 官方卡表/);
 });
@@ -163,6 +182,36 @@ test("server-renders the official rules and current restriction table", async ()
   assert.match(html, /SAO-2-029/);
   assert.match(html, /2026\.04\.01/);
   assert.match(html, /核对官方原文/);
+  assert.match(html, /https:\/\/www\.unionarena-tcg\.com\/jp\/images\/cardlist\/card\/UA44BT_EVA-1-051\.png/);
+  assert.doesNotMatch(html, /src="\/cards\/ua44bt\/UA44BT_EVA-1-051\.png"/);
+});
+
+test("deck export image proxy only streams official card images without caching", async (t) => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => { globalThis.fetch = originalFetch; });
+  globalThis.fetch = async (input) => {
+    assert.equal(String(input), "https://www.unionarena-tcg.com/jp/images/cardlist/card/UA44BT_EVA-1-051.png");
+    return new Response(new Uint8Array([137, 80, 78, 71]), {
+      headers: {
+        "content-length": "4",
+        "content-type": "image/png",
+      },
+    });
+  };
+
+  const source = encodeURIComponent("https://www.unionarena-tcg.com/jp/images/cardlist/card/UA44BT_EVA-1-051.png");
+  const response = await render(`/api/card-image?url=${source}`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("content-type"), "image/png");
+  assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [137, 80, 78, 71]);
+});
+
+test("deck export image proxy rejects non-official URLs", async () => {
+  const source = encodeURIComponent("https://example.com/card.png");
+  const response = await render(`/api/card-image?url=${source}`);
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "invalid_image_url" });
 });
 
 test("server-renders the local deck library", async () => {

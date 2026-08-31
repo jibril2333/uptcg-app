@@ -66,19 +66,19 @@ function imgAlts(fragment = "") {
     .filter(Boolean);
 }
 
-async function fetchWithRetry(url, responseType = "text", attempts = 3) {
+async function fetchWithRetry(url, attempts = 3) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const response = await fetch(url, {
         headers: {
-          Accept: responseType === "text" ? "text/html,application/xhtml+xml" : "image/png,image/*",
+          Accept: "text/html,application/xhtml+xml",
           "Accept-Language": "ja,en;q=0.8",
           "User-Agent": "UPTCG-local-catalog-sync/1.0 (+local personal catalog)",
         },
       });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return responseType === "text" ? response.text() : Buffer.from(await response.arrayBuffer());
+      return response.text();
     } catch (error) {
       lastError = error;
       if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, attempt * 500));
@@ -240,7 +240,7 @@ function summaryFromData(data, productKey) {
   return {
     cardCount: data.cardCount,
     colors: data.colors || inferColors(data.cards),
-    coverImage: data.cards?.[0]?.image,
+    coverImage: data.cards?.[0]?.imageOfficialUrl || data.cards?.[0]?.image,
     dataFile: configuredDataRoot ? `${productKey}.json` : `data/cards/${productKey}.json`,
     dataUrl: `/cards/${productKey}/data.json`,
     officialListUrl: data.officialListUrl,
@@ -259,11 +259,9 @@ function resolveDataFile(dataFile = "") {
   return path.resolve(root, dataFile);
 }
 
-async function hasCompleteAssets(data, productKey) {
+async function hasCompleteProductData(data, productKey) {
   try {
     await access(path.join(publicCardsRoot, productKey, "data.json"));
-    await runPool(data.cards || [], 32, (card) =>
-      access(path.join(publicCardsRoot, productKey, card.imageFileName)));
     return Boolean(data.cards?.length);
   } catch {
     return false;
@@ -293,7 +291,7 @@ async function reuseCachedMixedSeries(catalog, seriesId, listHtml = null) {
       if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
       const workCode = data.workCode || inferWorkCode(data.cards);
       const { productKey } = mixedProductIdentity(seriesId, workCode);
-      if (!(await hasCompleteAssets(data, productKey))) return null;
+      if (!(await hasCompleteProductData(data, productKey))) return null;
       loaded.push({ data, workCode });
     }
     if (listHtml) {
@@ -330,7 +328,7 @@ async function reuseCachedSeries(catalog, seriesId, listHtml = null) {
     if (!data.cards?.length || data.cards.length !== data.cardCount) return null;
     if (listHtml && !sameCardList(data.cards, parseListPage(listHtml, seriesId).cards)) return null;
     const { productKey, setCode } = productIdentity(data.productName, data.cards[0], seriesId);
-    if (!(await hasCompleteAssets(data, productKey))) return null;
+    if (!(await hasCompleteProductData(data, productKey))) return null;
     const normalized = {
       ...data,
       colors: data.colors || inferColors(data.cards),
@@ -351,41 +349,23 @@ async function syncSeries(seriesId, prefetchedListHtml = null) {
   const listHtml = prefetchedListHtml ?? await fetchWithRetry(listUrl);
   const { cards: listCards, productName, resultCount } = parseListPage(listHtml, seriesId);
   const { productKey, setCode } = productIdentity(productName, listCards[0], seriesId);
-  const imageDirectory = path.join(publicCardsRoot, productKey);
-  await mkdir(imageDirectory, { recursive: true });
   await mkdir(dataRoot, { recursive: true });
 
   let detailProgress = 0;
-  let imageProgress = 0;
-
-  const [cards] = await Promise.all([
-    runPool(listCards, concurrency, async (card) => {
-      try {
-        const detailHtml = await fetchWithRetry(card.detailSourceUrl);
-        return parseDetailPage(detailHtml, card);
-      } catch (error) {
-        console.warn(`Detail fallback for ${card.cardNo}: ${error.message}`);
-        return card;
-      } finally {
-        detailProgress += 1;
-        if (detailProgress % 20 === 0 || detailProgress === resultCount) {
-          console.log(`  Details ${detailProgress}/${resultCount}`);
-        }
+  const cards = await runPool(listCards, concurrency, async (card) => {
+    try {
+      const detailHtml = await fetchWithRetry(card.detailSourceUrl);
+      return parseDetailPage(detailHtml, card);
+    } catch (error) {
+      console.warn(`Detail fallback for ${card.cardNo}: ${error.message}`);
+      return card;
+    } finally {
+      detailProgress += 1;
+      if (detailProgress % 20 === 0 || detailProgress === resultCount) {
+        console.log(`  Details ${detailProgress}/${resultCount}`);
       }
-    }),
-    runPool(listCards, concurrency, async (card) => {
-      const destination = path.join(imageDirectory, card.imageFileName);
-      try {
-        await access(destination);
-      } catch {
-        await writeFile(destination, await fetchWithRetry(card.imageOfficialUrl, "buffer"));
-      }
-      imageProgress += 1;
-      if (imageProgress % 20 === 0 || imageProgress === resultCount) {
-        console.log(`  Images  ${imageProgress}/${resultCount}`);
-      }
-    }),
-  ]);
+    }
+  });
 
   const syncedAt = new Date().toISOString();
   const normalizedCards = cards.map((card) => ({
@@ -421,42 +401,21 @@ async function syncMixedSeries(seriesId, prefetchedListHtml = null) {
     workCode: workCodeFromCardNo(card.cardNo),
   }));
 
-  for (const workCode of new Set(groupedListCards.map((card) => card.workCode))) {
-    const { productKey } = mixedProductIdentity(seriesId, workCode);
-    await mkdir(path.join(publicCardsRoot, productKey), { recursive: true });
-  }
-
   let detailProgress = 0;
-  let imageProgress = 0;
-  const [cards] = await Promise.all([
-    runPool(groupedListCards, concurrency, async (card) => {
-      try {
-        const detailHtml = await fetchWithRetry(card.detailSourceUrl);
-        return parseDetailPage(detailHtml, card);
-      } catch (error) {
-        console.warn(`Detail fallback for ${card.cardNo}: ${error.message}`);
-        return card;
-      } finally {
-        detailProgress += 1;
-        if (detailProgress % 20 === 0 || detailProgress === resultCount) {
-          console.log(`  Details ${detailProgress}/${resultCount}`);
-        }
+  const cards = await runPool(groupedListCards, concurrency, async (card) => {
+    try {
+      const detailHtml = await fetchWithRetry(card.detailSourceUrl);
+      return parseDetailPage(detailHtml, card);
+    } catch (error) {
+      console.warn(`Detail fallback for ${card.cardNo}: ${error.message}`);
+      return card;
+    } finally {
+      detailProgress += 1;
+      if (detailProgress % 20 === 0 || detailProgress === resultCount) {
+        console.log(`  Details ${detailProgress}/${resultCount}`);
       }
-    }),
-    runPool(groupedListCards, concurrency, async (card) => {
-      const { productKey } = mixedProductIdentity(seriesId, card.workCode);
-      const destination = path.join(publicCardsRoot, productKey, card.imageFileName);
-      try {
-        await access(destination);
-      } catch {
-        await writeFile(destination, await fetchWithRetry(card.imageOfficialUrl, "buffer"));
-      }
-      imageProgress += 1;
-      if (imageProgress % 20 === 0 || imageProgress === resultCount) {
-        console.log(`  Images  ${imageProgress}/${resultCount}`);
-      }
-    }),
-  ]);
+    }
+  });
 
   const groups = new Map();
   for (const card of cards) {
