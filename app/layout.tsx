@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { buildWorks } from "./card-data";
 import { LegacyDataMigration } from "./components/LegacyDataMigration";
+import { LiquidGlassEffects } from "./components/LiquidGlassEffects";
 import { series } from "./series-data";
 import "./globals.css";
 import "./liquid-glass.css";
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   ])];
   return (
     <html lang="zh-Hant">
-      <body><LegacyDataMigration seriesCodes={seriesCodes} />{children}</body>
+      <body><LiquidGlassEffects /><LegacyDataMigration seriesCodes={seriesCodes} />{children}</body>
     </html>
   );
 }
