@@ -3,6 +3,7 @@ import { buildWorks } from "./card-data";
 import { LegacyDataMigration } from "./components/LegacyDataMigration";
 import { series } from "./series-data";
 import "./globals.css";
+import "./liquid-glass.css";
 
 export const metadata: Metadata = {
   title: "UPTCG｜Union Arena 中文組牌工具",
