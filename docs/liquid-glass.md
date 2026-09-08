@@ -10,6 +10,9 @@ native compositor.
   filtering controls and card-detail dialogs. Card images and text are not filtered.
 - A rounded-rectangle signed-distance field supplies an edge normal map. Convex
   edges displace the actual backdrop; the center of the map stays neutral.
+  Sampling is inward, with a smooth squared-sine envelope and strength bounded
+  to prevent image folding. Encoded R/G value 128 is normalized to exactly 0.5.
+  The map uses the pseudo-element's padding-box dimensions, not its border box.
 - Three SVG displacement paths split red, green and blue very slightly at the edge.
 - Separate CSS layers add clear tint, opposite specular arcs, inner highlights and
   depth shadows. Pointer position steers the light, and press/hover states flex.
@@ -46,7 +49,10 @@ deployment, Docker configuration, database schemas, card synchronization or user
 ### This iteration's checks
 
 - `npm run lint`: passed, exit 0.
-- `npm test`: production build succeeded; all 16 tests passed, exit 0.
+- `npm test`: production build succeeded; all 18 tests passed, exit 0.
+- Inner-frame regression: the previous 292×74 capsule map sampled outside the
+  filter at 8,128 pixel centers (strongest RGB channel); the corrected map has 0.
+  Tests also check smooth slopes and monotonic sampling through the lens edge.
 - Temporary fixture-backed homepage: HTTP 200.
 - `tsc --noEmit --incremental false`: exit 2, with the same 10 diagnostics on
   baseline commit `33cc65a` and this change. The existing diagnostics are missing

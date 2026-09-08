@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
-import { createLensPixels } from "./liquid-optics";
+import { createLensPixels, lensStrength } from "./liquid-optics";
 
 const surfaces = [
   ".spatial-sidebar", ".bottom-nav", ".liquid-navigation-lens",
@@ -41,8 +41,9 @@ export function LiquidGlassEffects() {
     const resize = (element: HTMLElement) => {
       const entry = entries.get(element);
       if (!entry) return;
-      const width = element.offsetWidth;
-      const height = element.offsetHeight;
+      // The inset:0 pseudo-element occupies the padding box, not the border box.
+      const width = element.clientWidth;
+      const height = element.clientHeight;
       if (!width || !height) return;
       const radius = Number.parseFloat(getComputedStyle(element).borderTopLeftRadius) || 24;
       const signature = `${width}:${height}:${radius}`;
@@ -61,12 +62,19 @@ export function LiquidGlassEffects() {
       image.data.set(createLensPixels(w, h, radius * ratio, bevel * ratio));
       context.putImageData(image, 0, 0);
 
-      const strength = Math.min(64, Math.max(18, bevel * 2.2));
+      const strength = lensStrength(bevel);
       entry.filter.replaceChildren();
       entry.filter.setAttribute("width", String(width));
       entry.filter.setAttribute("height", String(height));
-      entry.filter.append(svgNode("feImage", { href: canvas.toDataURL(), x: 0, y: 0, width, height, preserveAspectRatio: "none", result: "lens" }));
-      entry.filter.append(svgNode("feGaussianBlur", { in: "SourceGraphic", stdDeviation: .65, result: "scene" }));
+      entry.filter.append(svgNode("feImage", { href: canvas.toDataURL(), x: 0, y: 0, width, height, preserveAspectRatio: "none", result: "encodedLens" }));
+      // An 8-bit value of 128 is not exactly .5. Normalize R/G so the flat
+      // center has truly zero displacement in every color channel.
+      const normalize = svgNode("feComponentTransfer", { in: "encodedLens", result: "lens" });
+      for (const channel of ["R", "G"]) {
+        normalize.append(svgNode(`feFunc${channel}`, { type: "linear", slope: 255 / 254, intercept: -1 / 254 }));
+      }
+      entry.filter.append(normalize);
+      entry.filter.append(svgNode("feGaussianBlur", { in: "SourceGraphic", stdDeviation: .65, edgeMode: "duplicate", result: "scene" }));
       // Separate RGB paths make the strongest curved edges split light subtly.
       [1.035, 1, .965].forEach((factor, channel) => {
         entry.filter.append(svgNode("feDisplacementMap", { in: "scene", in2: "lens", scale: strength * factor, xChannelSelector: "R", yChannelSelector: "G", result: `bend${channel}` }));
