@@ -6,21 +6,35 @@ native compositor.
 
 ## Layers
 
-- `LiquidGlassEffects.tsx` progressively enhances navigation, homepage shortcuts,
-  filtering controls and card-detail dialogs. Card images and text are not filtered.
+- `GlassSurface.tsx` explicitly equips navigation, homepage shortcuts, filtering
+  controls and card-detail dialogs with their own material. It preserves the
+  original semantic element, handlers and content. Card images and text are not filtered.
 - A rounded-rectangle signed-distance field supplies an edge normal map. Convex
   edges displace the actual backdrop; the center of the map stays neutral.
   Sampling is inward, with a smooth squared-sine envelope and strength bounded
   to prevent image folding. Encoded R/G value 128 is normalized to exactly 0.5.
-  The map uses the pseudo-element's padding-box dimensions, not its border box.
+  The map uses the material layer's padding-box dimensions, not its border box.
 - Three SVG displacement paths split red, green and blue very slightly at the edge.
-- Separate CSS layers add clear tint, opposite specular arcs, inner highlights and
-  depth shadows. Pointer position steers the light, and press/hover states flex.
+- Separate backdrop and rim elements add clear tint, opposite specular arcs,
+  inner highlights and depth shadows behind the content. Pointer position steers
+  the light, and press/hover states flex. Decorative layers are hidden from
+  assistive technology and do not receive pointer input.
 - A shared glass capsule slides between navigation options on pointer/focus input,
   returning to the current page on exit. Navigation destinations remain unchanged.
-- ResizeObserver regenerates the lens texture for each surface's geometry.
-  MutationObserver handles route changes, product selections and opened dialogs.
-  Detached surfaces release their filters, event listeners and pending animation frames.
+- Each mounted surface owns its ResizeObserver, SVG filter and input listeners.
+  React mounts/unmounts selected product materials and dialogs directly; there is
+  no document-wide surface scan, MutationObserver or global filter registry.
+  Unmounted surfaces release their observers, event listeners and animation frames.
+
+## Work-aware surroundings
+
+`WorkThemeProvider` applies CSS variables to the shared layout without modifying
+body styles or persistent data. Catalog/collection routes select a work theme;
+the deck editor gives the chosen card color precedence. Leaving the route clears
+its selection. EVA and MST have curated presentation hues; other works use a
+stable code-derived hue, including newly synchronized works. These are app
+presentation colors, not official franchise brand colors. Invalid codes fall
+back to the default theme. Light accents use dark button text for legibility.
 
 ## Browser behavior and accessibility
 
@@ -49,7 +63,10 @@ deployment, Docker configuration, database schemas, card synchronization or user
 ### This iteration's checks
 
 - `npm run lint`: passed, exit 0.
-- `npm test`: production build succeeded; all 18 tests passed, exit 0.
+- `npm test`: production build succeeded; all 22 tests passed, exit 0.
+- Theme tests cover deterministic new-work colors, deck-color precedence,
+  default reset, invalid/prototype inputs and button contrast across all 360 hues.
+  Rendered HTML checks include the explicit, decorative-only material layers.
 - Inner-frame regression: the previous 292×74 capsule map sampled outside the
   filter at 8,128 pixel centers (strongest RGB channel); the corrected map has 0.
   Tests also check smooth slopes and monotonic sampling through the lens edge.

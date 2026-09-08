@@ -1,5 +1,7 @@
 "use client";
 
+import { useWorkTheme } from "../components/WorkTheme";
+import { GlassSurface } from "../components/GlassSurface";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { UaCard, UaWork } from "../cards/CardCatalog";
 import { loadCollection, storeCollectionEntry, type CollectionEntries, type CollectionEntry } from "./collection-storage";
@@ -30,6 +32,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
   const cardCache = useRef(new Map<string, UaCard[]>());
 
   const activeWork = works.find((work) => work.code === activeWorkCode);
+  useWorkTheme(activeWork?.code);
   const datasets = activeWork?.datasets ?? EMPTY_DATASETS;
   const collectionItems = useMemo(() => Object.values(entries).filter((entry) => entry.count > 0), [entries]);
   const totalCopies = useMemo(() => collectionItems.reduce((total, entry) => total + entry.count, 0), [collectionItems]);
@@ -238,13 +241,13 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
           <div className="card-empty"><span>!</span><h2>读取失败</h2><p>{loadError}</p></div>
         ) : (
           <>
-            <div className="collection-filters">
+            <GlassSurface><div className="collection-filters">
               <label className="collection-search"><span>搜索卡名、编号或效果</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="输入关键词…" /></label>
               <label><span>稀有度</span><select value={rarity} onChange={(event) => setRarity(event.target.value)}><option value="all">全部</option>{rarityOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
               <label><span>颜色</span><select value={color} onChange={(event) => setColor(event.target.value)}><option value="all">全部</option>{colorOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
               <label><span>卡牌类型</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">全部</option>{categoryOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
               <label className="collection-owned-filter"><input type="checkbox" checked={ownedOnly} onChange={(event) => setOwnedOnly(event.target.checked)} /><span>只看已拥有</span></label>
-            </div>
+            </div></GlassSurface>
 
             <div className="collection-results">
               <p><span>{activeWork?.code}</span> · 全系列 · 已拥有 <strong>{currentOwnedKinds}</strong> / {cards.length} 种，共 <strong>{currentOwnedCopies}</strong> 张 · 当前显示 {filteredCards.length} 张</p>
@@ -284,8 +287,8 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
 
       {selected && (
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
-          <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="collection-card-modal-title">
-            <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
+          <GlassSurface><section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="collection-card-modal-title">
+            <GlassSurface><button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button></GlassSurface>
             <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
             <div className="card-modal__content">
               <p className="card-modal__eyebrow">{selected.cardNo} · {selected.rarity || "-"}</p>
@@ -305,7 +308,7 @@ export function CollectionCatalog({ works }: { works: UaWork[] }) {
               </dl>
               <a className="official-source-button" href={selected.detailOfficialUrl} target="_blank" rel="noreferrer">在 UA 官方网站查看 ↗</a>
             </div>
-          </section>
+          </section></GlassSurface>
         </div>
       )}
     </>

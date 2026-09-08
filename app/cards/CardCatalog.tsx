@@ -1,5 +1,7 @@
 "use client";
 
+import { useWorkTheme } from "../components/WorkTheme";
+import { GlassSurface } from "../components/GlassSurface";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 export type UaCard = {
@@ -66,6 +68,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
   const [selected, setSelected] = useState<UaCard | null>(null);
   const cardCache = useRef(new Map<string, UaCard[]>());
   const selectedWork = useMemo(() => works.find((work) => work.code === activeWork), [activeWork, works]);
+  useWorkTheme(selectedWork?.code);
   const datasets = useMemo(() => selectedWork?.datasets ?? [], [selectedWork]);
   const activeDataset = useMemo(
     () => datasets.find((dataset) => dataset.productKey === activeProduct),
@@ -265,7 +268,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
           </div>
         ) : (
           <>
-        <div className="card-toolbar">
+        <GlassSurface><div className="card-toolbar">
           <div className="card-toolbar__products">
             <div className="card-toolbar__products-head">
               <span>卡牌产品</span>
@@ -273,9 +276,9 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
             </div>
             <div className="card-product-tabs" role="tablist" aria-label="卡牌产品；再次点击已选产品可显示全系列">
               {datasets.map((dataset) => (
+                <GlassSurface key={dataset.productKey} active={dataset.productKey === activeDataset?.productKey}>
                 <button
                   className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""}
-                  key={dataset.productKey}
                   title={dataset.productKey === activeDataset?.productKey ? `${dataset.productName}（再次点击显示全系列）` : dataset.productName}
                   type="button"
                   role="tab"
@@ -285,6 +288,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
                   <strong>{dataset.setCode}</strong>
                   <span>{dataset.cardCount} 张</span>
                 </button>
+                </GlassSurface>
               ))}
             </div>
           </div>
@@ -320,7 +324,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
             <input type="checkbox" checked={parallelOnly} onChange={(event) => setParallelOnly(event.target.checked)} />
             <span>仅看平行卡</span>
           </label>
-        </div>
+        </div></GlassSurface>
 
         {isLoading ? (
           <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode ?? `${selectedWork.name}全系列`} 卡牌资料…</p></div>
@@ -361,8 +365,8 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
 
       {selected && (
         <div className="card-modal" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
-          <section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
-            <button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button>
+          <GlassSurface><section className="card-modal__panel" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
+            <GlassSurface><button className="card-modal__close" type="button" aria-label="关闭卡牌详情" onClick={() => setSelected(null)}>×</button></GlassSurface>
             <div className="card-modal__image"><img src={selected.image} alt={`${selected.cardNo} ${selected.name}`} /></div>
             <div className="card-modal__content">
               <p className="card-modal__eyebrow">{selected.cardNo} · {selected.rarity || "-"}</p>
@@ -382,7 +386,7 @@ export function CardCatalog({ works }: { works: UaWork[] }) {
               </dl>
               <a className="official-source-button" href={selected.detailOfficialUrl} target="_blank" rel="noreferrer">在 UA 官方网站查看 ↗</a>
             </div>
-          </section>
+          </section></GlassSurface>
         </div>
       )}
     </>

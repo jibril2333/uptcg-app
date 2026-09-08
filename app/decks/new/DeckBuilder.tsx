@@ -1,5 +1,7 @@
 "use client";
 
+import { useWorkTheme } from "../../components/WorkTheme";
+import { GlassSurface } from "../../components/GlassSurface";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { UaCard, UaWork } from "../../cards/CardCatalog";
 import { loadDecks, storeDecks, type SavedDeck, type SavedDeckCard } from "../deck-storage";
@@ -56,6 +58,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
   const cardCache = useRef(new Map<string, UaCard[]>());
 
   const activeWork = works.find((work) => work.code === activeWorkCode);
+  useWorkTheme(activeWork?.code, selectedColor);
   const allDatasets = useMemo(() => activeWork?.datasets ?? [], [activeWork]);
   const datasets = selectedColor
     ? allDatasets.filter((dataset) => !dataset.colors.length || dataset.colors.includes(selectedColor))
@@ -384,13 +387,13 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
             </div>
           </section>
 
-          <footer className="deck-setup-footer">
+          <GlassSurface><footer className="deck-setup-footer">
             <div>
               <span>当前选择</span>
               <strong>{activeWork ? activeWork.name : "尚未选择作品"}{selectedColor ? ` · ${colorLabel(selectedColor)}` : ""}</strong>
             </div>
             <button type="button" disabled={!activeWork || !selectedColor} onClick={startBuilding}>开始选择卡牌 <span>→</span></button>
-          </footer>
+          </footer></GlassSurface>
         </div>
       </section>
     );
@@ -408,12 +411,14 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
           <button className="deck-builder-change-setup" type="button" onClick={returnToSetup}><i style={{ "--deck-color": DECK_COLORS.find((color) => color.code === selectedColor)?.hex } as CSSProperties} />更改作品 / 颜色</button>
         </header>
 
-        <div className="deck-builder-controls">
+        <GlassSurface><div className="deck-builder-controls">
           <div className="deck-builder-product-tabs">
             {datasets.map((dataset) => (
-              <button className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""} key={dataset.productKey} type="button" onClick={() => selectProduct(dataset.productKey)}>
+              <GlassSurface key={dataset.productKey} active={dataset.productKey === activeDataset?.productKey}>
+              <button className={dataset.productKey === activeDataset?.productKey ? "is-active" : ""} type="button" onClick={() => selectProduct(dataset.productKey)}>
                 <strong>{dataset.setCode}</strong><span>{dataset.cardCount} 张</span>
               </button>
+              </GlassSurface>
             ))}
           </div>
           <div className="deck-builder-filters">
@@ -423,7 +428,7 @@ export function DeckBuilder({ works }: { works: UaWork[] }) {
             <label className="deck-builder-parallel"><input type="checkbox" checked={parallelOnly} onChange={(event) => setParallelOnly(event.target.checked)} />平行卡</label>
           </div>
           <div className="deck-builder-results"><p>显示 <strong>{filteredCards.length}</strong> / {cards.length} 张 {colorLabel(selectedColor)}卡牌 · 点击卡牌加入牌组</p>{(query || category !== "all" || rarity !== "all" || parallelOnly) && <button type="button" onClick={resetFilters}>清除筛选</button>}</div>
-        </div>
+        </div></GlassSurface>
 
         {isLoading ? (
           <div className="card-loading" role="status"><span /><p>正在读取 {activeDataset?.setCode} 卡牌资料…</p></div>

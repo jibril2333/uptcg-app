@@ -1,3 +1,4 @@
+import { GlassSurface, GlassNavigationLens } from "./GlassSurface";
 import Link from "next/link";
 
 const navItems = [
@@ -52,13 +53,14 @@ export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" 
         </details>
       </header>
 
-      <aside className="spatial-sidebar">
+      <GlassSurface><aside className="spatial-sidebar">
         <Brand />
         <div className="spatial-sidebar__context">
           <small>PERSONAL CARD SPACE</small>
           <strong>{navItems.find((item) => item.id === active)?.label}</strong>
         </div>
-        <nav className="spatial-sidebar__nav" aria-label="主要選單">
+        <nav className="spatial-sidebar__nav" aria-label="主要選單" data-glass-navigation>
+          <GlassNavigationLens activeKey={active} />
           {navItems.map((item) => (
             <Link className={item.id === active ? "is-active" : ""} aria-current={item.id === active ? "page" : undefined} key={item.id} href={item.href}>
               <span aria-hidden="true"><NavigationIcon name={item.id} /></span><strong>{item.label}</strong>
@@ -66,15 +68,16 @@ export function SiteNavigation({ active }: { active: "home" | "cards" | "rules" 
           ))}
         </nav>
         <span className="spatial-sidebar__status"><i />DATA ONLINE</span>
-      </aside>
+      </aside></GlassSurface>
 
-      <nav className="bottom-nav" aria-label="行動版主要選單">
+      <GlassSurface><nav className="bottom-nav" aria-label="行動版主要選單" data-glass-navigation>
+        <GlassNavigationLens activeKey={active} />
         {mobileNavItems.map((item) => (
           <Link className={item.id === active ? "is-active" : ""} aria-current={item.id === active ? "page" : undefined} key={item.id} href={item.href}>
             <span aria-hidden="true"><NavigationIcon name={item.id} /></span><small>{item.label}</small>
           </Link>
         ))}
-      </nav>
+      </nav></GlassSurface>
     </>
   );
 }
