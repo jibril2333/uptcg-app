@@ -27,7 +27,7 @@ function NavigationIcon({ name }: { name: typeof navItems[number]["id"] }) {
 function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link className={compact ? "brand brand--compact" : "brand"} href="/">
-      <img src="/assets/uptcg-logo.png" alt="UPTCG" />
+      <span className="brand__mark" aria-hidden="true"><NavigationIcon name="cards" /></span>
       <span>
         <strong>UPTCG</strong>
         {!compact && <small>UNION ARENA TCG</small>}

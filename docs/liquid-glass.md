@@ -36,6 +36,20 @@ stable code-derived hue, including newly synchronized works. These are app
 presentation colors, not official franchise brand colors. Invalid codes fall
 back to the default theme. Light accents use dark button text for legibility.
 
+## Light palette
+
+The global palette is now light (`color-scheme: light`): ice-blue surroundings,
+white translucent material and slate text. Legacy hardcoded black/gold UI colors
+in catalog, collection, decks, rules and settings are normalized to shared text
+and accent tokens. Work themes split dark foreground accents from pale button
+fills, and their contrast is tested across all possible hues. Deck-image export
+uses the same light palette. The sidebar brand tile reuses the existing card icon.
+
+Card art and semantic deck-color swatches are unchanged. Image captions retain
+dark scrims for readability; unowned cards remain grayscale, but are no longer
+darkened. Error/ban, restriction and enabled states retain distinct semantic colors.
+No layout, synchronization, data schema or saved-data changes are included.
+
 ## Browser behavior and accessibility
 
 SVG backdrop filters are enabled conservatively on Chromium. Parsing success from
@@ -63,9 +77,10 @@ deployment, Docker configuration, database schemas, card synchronization or user
 ### This iteration's checks
 
 - `npm run lint`: passed, exit 0.
-- `npm test`: production build succeeded; all 22 tests passed, exit 0.
+- `npm test`: production build succeeded; all 24 tests passed, exit 0.
 - Theme tests cover deterministic new-work colors, deck-color precedence,
-  default reset, invalid/prototype inputs and button contrast across all 360 hues.
+  default reset, invalid/prototype inputs and light-theme text/button contrast across all 360 hues.
+  CSS checks cover light native controls, removed legacy colors and accessible fallbacks.
   Rendered HTML checks include the explicit, decorative-only material layers.
 - Inner-frame regression: the previous 292×74 capsule map sampled outside the
   filter at 8,128 pixel centers (strongest RGB channel); the corrected map has 0.

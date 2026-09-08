@@ -9,11 +9,12 @@ export function workTheme(workCode = "", cardColor = "") {
   const workHue = Object.hasOwn(WORK_HUES, code) ? WORK_HUES[code] : undefined;
   const hue = code ? cardHue ?? workHue ?? hash : 210;
   return {
-    "--work-accent": `hsl(${hue} 65% 76%)`,
+    "--work-accent": `hsl(${hue} 55% 27%)`,
+    "--work-fill": `hsl(${hue} 65% 82%)`,
     "--work-accent-ink": "#102030",
     "--work-light": `hsl(${hue} 62% 88%)`,
-    "--work-ambient": `hsl(${hue} 64% 40% / .42)`,
-    "--work-ambient-secondary": `hsl(${(hue + 42) % 360} 50% 36% / .3)`,
-    "--work-glass-tint": `hsl(${hue} 60% 70% / .07)`,
+    "--work-ambient": `hsl(${hue} 70% 82% / .5)`,
+    "--work-ambient-secondary": `hsl(${(hue + 42) % 360} 65% 87% / .4)`,
+    "--work-glass-tint": `hsl(${hue} 60% 97% / .48)`,
   };
 }
