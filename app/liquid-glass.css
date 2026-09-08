@@ -1,14 +1,14 @@
-/* Optical glass: static lighting, bounded blur, no animated backdrop sampling. */
+/* Liquid material: a refracted scene, clear tint, specular rim and elastic input. */
 :root {
-  --bg: #080d15;
+  --bg: #10121b;
   --panel: #141e2b;
   --panel-soft: #1c2837;
   --line: rgba(206, 229, 250, .15);
   --text: #edf5ff;
   --muted: #8798af;
   --muted-light: #b4c3d5;
-  --accent: #98c8ff;
-  --accent-bright: #b6f3ec;
+  --accent: #d5e4ff;
+  --accent-bright: #f1f8ff;
   --sidebar-width: 250px;
   --glass-fill: linear-gradient(145deg, rgba(229, 244, 255, .14), rgba(104, 151, 183, .05) 48%, rgba(224, 244, 255, .08));
   --glass-edge: rgba(218, 239, 255, .23);
@@ -25,7 +25,7 @@ body {
 .site-shell, .main-content { background: transparent; }
 .main-content { margin-left: var(--sidebar-width); padding: 0 0 34px; }
 
-/* The full-height sidebar has an optical tint, not a live backdrop filter. */
+/* Floating navigation remains on the left. Optical layers are defined below. */
 .spatial-sidebar {
   position: fixed;
   inset: 16px auto 16px 16px;
@@ -186,7 +186,7 @@ body {
 .card-detail-list dt, .card-stat-row small { color: #91a8be; }
 .card-detail-list dd { color: #cedded; }
 
-/* Only two small resting surfaces and the open dialog sample their backdrop. */
+/* CSS-only fallback before the optical enhancer attaches. */
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
     .liquid-glass-accent, .card-toolbar { -webkit-backdrop-filter: blur(8px) saturate(1.12); backdrop-filter: blur(8px) saturate(1.12); }
@@ -247,4 +247,142 @@ body {
 @media (forced-colors: active) {
   .spatial-sidebar__nav a.is-active, .card-product-tabs button.is-active, .liquid-glass-accent { border: 2px solid Highlight; }
   .liquid-glass-accent__reflection, .spatial-home__aurora { display: none; }
+}
+
+/* The surroundings must remain visible through the glass, not be painted blue. */
+body {
+  background:
+    radial-gradient(ellipse at 5% 35%, #187b896e, transparent 38%),
+    radial-gradient(ellipse at 80% 5%, #8972b84d, transparent 46%),
+    linear-gradient(125deg, transparent 29%, #7ce6df12 37%, #c5f7f629 38%, transparent 48%),
+    radial-gradient(ellipse at 65% 95%, #bd5e7040, transparent 45%),
+    #10121b;
+  background-attachment: fixed;
+}
+.liquid-optics-definitions { position: fixed; width: 0; height: 0; pointer-events: none; }
+.spatial-home__aurora { background: radial-gradient(ellipse at 40% 0%, #d9e8ff0d, transparent 65%); }
+.spatial-home__welcome h1 span { color: #f0f2ff; }
+.spatial-home__welcome p, .spatial-home__welcome > small { color: #b8c3d2; }
+.spatial-sidebar { border-radius: 32px; }
+.spatial-sidebar__nav a { border-radius: 24px; }
+.spatial-window { border-radius: 32px; }
+.liquid-glass-accent { min-height: 74px; border-radius: 999px; padding: 14px 16px 14px 24px; }
+.liquid-glass-accent__reflection { display: none; }
+.liquid-glass-accent__arrow { color: white; background: #ffffff12; border-color: #ffffff3d; }
+.spatial-window__heading small, .liquid-glass-accent__copy small { color: #c0c9d8; font-size: 12px; }
+.spatial-window > p { color: #bcc8d7; font-size: 14px; }
+.spatial-sidebar__context small, .spatial-sidebar__status { font-size: 11px; }
+.spatial-sidebar__nav a, .bottom-nav a { color: #c2cbd8; }
+.card-toolbar { border-radius: 26px; }
+.card-modal__panel { border-radius: 32px; }
+.card-toolbar, .collection-filters, .deck-builder-controls, .bottom-nav a,
+.card-product-tabs button, .deck-builder-product-tabs button { position: relative; }
+
+/* Text and controls are never filtered: only the negative-z backdrop is bent. */
+.site-shell [data-liquid-glass] {
+  --glass-x: 30%;
+  --glass-y: 0%;
+  --glass-angle: 135deg;
+  --glass-tint: #ffffff0a;
+  --glass-scatter: 6px;
+  isolation: isolate;
+  background: transparent !important;
+  border-color: #ffffff40;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 12px 32px #0003, 0 2px 5px #0002, inset 0 1px 1px #ffffffa6, inset 1px 0 1px #ffffff38, inset 0 -1px 1px #ffffff40;
+}
+.site-shell [data-liquid-glass]::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at var(--glass-x) var(--glass-y), #ffffff22, transparent 65%),
+    linear-gradient(var(--glass-angle), #ffffff13, transparent 40%, #ffffff05 70%, #ffffff1a),
+    var(--glass-tint);
+  -webkit-backdrop-filter: blur(var(--glass-scatter)) saturate(1.45) brightness(1.08);
+  backdrop-filter: blur(var(--glass-scatter)) saturate(1.45) brightness(1.08);
+  box-shadow: inset 0 0 14px -6px #ffffff6b;
+}
+.site-shell [data-glass-refraction="true"]::before {
+  -webkit-backdrop-filter: var(--glass-refraction) saturate(1.35) brightness(1.08);
+  backdrop-filter: var(--glass-refraction) saturate(1.35) brightness(1.08);
+}
+/* Two opposed specular arcs create a convex lip, rather than a flat white line. */
+.site-shell [data-liquid-glass]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 1.5px;
+  border: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--glass-angle), #fff0 0deg, #ffffffb8 65deg, #fff2 105deg, #fff0 155deg, #ffffffc9 245deg, #e0f6ff3d 285deg, #fff0 330deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  box-shadow: none;
+}
+.site-shell .spatial-sidebar[data-liquid-glass] { --glass-tint: #13192626; --glass-scatter: 14px; }
+.site-shell .card-modal__panel[data-liquid-glass] { --glass-tint: #17202c9e; --glass-scatter: 20px; }
+.site-shell .card-toolbar[data-liquid-glass], .site-shell .deck-builder-controls[data-liquid-glass], .site-shell .collection-filters[data-liquid-glass] { --glass-tint: #121b2a52; }
+.site-shell .spatial-sidebar__nav a.is-active, .site-shell .bottom-nav a.is-active { color: white; text-shadow: 0 1px 8px #0004; }
+.site-shell .spatial-sidebar__nav a.is-active[data-liquid-glass], .site-shell .bottom-nav a.is-active[data-liquid-glass] { --glass-tint: #ffffff0d; border-color: #ffffff70; }
+.site-shell .card-product-tabs button.is-active[data-liquid-glass], .site-shell .deck-builder-product-tabs button.is-active[data-liquid-glass] { --glass-tint: #ffffff12; border-radius: 999px; }
+.site-shell .spatial-window[data-liquid-glass] { --glass-tint: #18213329; }
+.spatial-window, .liquid-glass-accent, .spatial-sidebar__nav a, .bottom-nav a, .card-modal__close {
+  transition: transform 650ms cubic-bezier(.22, 1.5, .36, 1), border-radius 500ms cubic-bezier(.22, 1.5, .36, 1), box-shadow 250ms ease;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .site-shell .liquid-glass-accent:hover, .site-shell .spatial-window:hover {
+    transform: translate(var(--glass-lean-x, 0px), calc(var(--glass-lean-y, 0px) - 3px)) scale(1.025);
+  }
+  .site-shell .spatial-sidebar__nav a:hover, .site-shell .bottom-nav a:hover { transform: scale(1.04); }
+}
+.site-shell :is(.liquid-glass-accent, .spatial-window, .spatial-sidebar__nav a, .bottom-nav a, .card-modal__close)[data-glass-pressed="true"] { transform: scale(.96); transition-duration: 120ms; }
+.card-modal { background: #03071380; }
+.card-toolbar input[type="text"], .card-toolbar select, .card-search__field { border-radius: 14px; background: #00000020; border-color: #ffffff26; }
+.card-product-tabs button { border-radius: 999px; }
+.spatial-sidebar__nav { position: relative; isolation: isolate; }
+.liquid-navigation-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border: 1px solid #ffffff70;
+  border-radius: 999px;
+  pointer-events: none;
+  transition: transform 540ms cubic-bezier(.22, 1.35, .36, 1), width 450ms ease, height 450ms ease;
+}
+.site-shell [data-glass-navigation] a.is-active { background: transparent; border-color: transparent; box-shadow: none; }
+.site-shell [data-glass-navigation] a.is-active::after { display: none; }
+.button--primary, .new-deck-button, .settings-primary-button, .deck-save-button { background: linear-gradient(150deg, #f4faffd9, #c4d7efcf) !important; }
+
+@media (max-width: 900px) {
+  .site-shell .bottom-nav[data-liquid-glass] { --glass-tint: #18202f47; border-radius: 999px; }
+  .bottom-nav a { border-radius: 999px; }
+  .mobile-header { background: #15202b99; -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); }
+  .bottom-nav a small { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-shell [data-liquid-glass], .spatial-sidebar__nav a, .bottom-nav a { transition: none; transform: none; }
+  .liquid-navigation-lens { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .site-shell [data-liquid-glass] { background: #192535 !important; box-shadow: none; border-color: #d7e6fc; }
+  .site-shell [data-liquid-glass]::before, .site-shell [data-liquid-glass]::after { display: none; }
+  .mobile-header { background: #192535; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .site-shell [data-liquid-glass] { background: Canvas !important; color: CanvasText; border-color: ButtonText; }
+  .site-shell [data-liquid-glass]::before, .site-shell [data-liquid-glass]::after { display: none; }
+  .site-shell [data-glass-navigation] a.is-active { color: Highlight; outline: 2px solid Highlight; outline-offset: -2px; }
 }

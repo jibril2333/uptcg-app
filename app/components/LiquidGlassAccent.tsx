@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-// The reflection is a CSS layer. No pointer listeners, animation loop, or SVG
-// displacement filter is needed for this small interactive glass surface.
+// Content stays sharp above the independently refracted backdrop layer.
 export function LiquidGlassAccent({ href }: { href: string }) {
   return (
     <Link className="liquid-glass-accent" href={href}>
