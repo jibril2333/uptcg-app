@@ -144,9 +144,6 @@ async function fetchAsset(request) {
       "content-type": contentTypes.get(path.extname(filePath).toLowerCase()) || "application/octet-stream",
     });
     if (pathname.startsWith("/assets/")) headers.set("cache-control", "public, max-age=31536000, immutable");
-    if (isCardAsset && path.extname(filePath).toLowerCase() !== ".json") {
-      headers.set("cache-control", "public, max-age=86400");
-    }
     if (isCardAsset && path.extname(filePath).toLowerCase() === ".json") {
       headers.set("cache-control", "no-cache");
     }
@@ -306,7 +303,7 @@ server.listen(port, hostname, () => {
   console.log(`UPTCG local server listening on http://${hostname}:${port}`);
   console.log(`SQLite database: ${sqlitePath}`);
   console.log(`Card data: ${cardDataRoot}`);
-  console.log(`Card images: ${cardAssetRoot}`);
+  console.log(`Public card data: ${cardAssetRoot}`);
 });
 
 function close() {

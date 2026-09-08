@@ -60,6 +60,6 @@ export const series: SeriesItem[] = [
   { code: "CGH", name: "Code Geass (魯路修)", ext: "png" },
   { code: "HTR", name: "獵人", ext: "png" },
   { code: "JJK", name: "咒術迴戰", ext: "png" },
-  { code: "IMC", name: "偶像大師 灰姑娘女孩", ext: "png", image: "/cards/promo-imc/UAPR_IMC-1-027.png" },
+  { code: "IMC", name: "偶像大師 灰姑娘女孩", ext: "png" },
   { code: "UNI", name: "UNION ARENA 通用卡", ext: "png", image: "/assets/union-arena.png" },
 ];

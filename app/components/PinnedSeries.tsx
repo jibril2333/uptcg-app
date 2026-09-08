@@ -10,7 +10,7 @@ function SeriesTile({ item, isPinned, onToggle }: { item: SeriesItem; isPinned: 
   return (
     <article className="series-card-wrap">
       <a className="series-card" href={`/cards?series=${item.code}`} aria-label={`查看 ${item.name} 卡表`}>
-        <img src={item.image ?? `/assets/series/${item.code}.${item.ext}`} alt={item.name} loading="lazy" />
+        <img src={item.image ?? `/assets/series/${item.code}.${item.ext}`} alt={item.name} loading="lazy" referrerPolicy="no-referrer" />
         <span className="series-card__shade" />
         <span className="series-card__code">{item.code}</span>
         <span className="series-card__name">{item.name}</span>

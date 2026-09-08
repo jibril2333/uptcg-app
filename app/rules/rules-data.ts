@@ -1,3 +1,5 @@
+import { officialCardImageUrl } from "../card-image";
+
 export type RestrictedCard = {
   effectiveDate: string;
   fullCardNo: string;
@@ -16,7 +18,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA44BT/EVA-1-051",
-    image: "/cards/ua44bt/UA44BT_EVA-1-051.png",
+    image: officialCardImageUrl("UA44BT_EVA-1-051.png"),
     limit: 1,
     name: "式波・アスカ・ラングレー",
     seriesCode: "EVA",
@@ -26,7 +28,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA44BT/EVA-1-063",
-    image: "/cards/ua44bt/UA44BT_EVA-1-063.png",
+    image: officialCardImageUrl("UA44BT_EVA-1-063.png"),
     limit: 1,
     name: "ガイウスの槍",
     seriesCode: "EVA",
@@ -36,7 +38,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA44BT/EVA-1-004",
-    image: "/cards/ua44bt/UA44BT_EVA-1-004.png",
+    image: officialCardImageUrl("UA44BT_EVA-1-004.png"),
     limit: 1,
     name: "綾波 レイ",
     seriesCode: "EVA",
@@ -46,7 +48,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA01BT/CGH-1-083",
-    image: "/cards/ua01bt/UA01BT_CGH-1-083.png",
+    image: officialCardImageUrl("UA01BT_CGH-1-083.png"),
     limit: 1,
     name: "ナナリー・ランペルージ",
     seriesCode: "CGH",
@@ -56,7 +58,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA34BT/CGD-1-070",
-    image: "/cards/ua34bt/UA34BT_CGD-1-070.png",
+    image: officialCardImageUrl("UA34BT_CGD-1-070.png"),
     limit: 1,
     name: "ファウルバウト",
     seriesCode: "CGD",
@@ -66,7 +68,7 @@ export const restrictedCards: RestrictedCard[] = [
   {
     effectiveDate: restrictionEffectiveDate,
     fullCardNo: "UA44BT/EVA-1-041",
-    image: "/cards/ua44bt/UA44BT_EVA-1-041.png",
+    image: officialCardImageUrl("UA44BT_EVA-1-041.png"),
     limit: 2,
     name: "エヴァンゲリオン改2号機",
     seriesCode: "EVA",

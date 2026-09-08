@@ -32,16 +32,13 @@ function productDataPath(product) {
   return path.join(cardDataRoot, path.basename(product.dataFile || `${product.productKey}.json`));
 }
 
-async function validateProduct(product, checkEveryImage) {
+async function validateProduct(product) {
   const data = JSON.parse(await readFile(productDataPath(product), "utf8"));
   if (!Array.isArray(data.cards) || !data.cards.length || data.cards.length !== product.cardCount) {
     return false;
   }
 
   await access(path.join(cardAssetRoot, product.productKey, "data.json"));
-  const cards = checkEveryImage ? data.cards : [data.cards[0], data.cards.at(-1)].filter(Boolean);
-  await runPool(cards, 48, (card) =>
-    access(path.join(cardAssetRoot, product.productKey, card.imageFileName)));
   return true;
 }
 
@@ -53,7 +50,7 @@ async function validateCardStore({ full }) {
     const products = full
       ? catalog.series
       : [catalog.series[0], catalog.series.at(-1)].filter(Boolean);
-    await runPool(products, full ? 8 : 2, (product) => validateProduct(product, full));
+    await runPool(products, full ? 8 : 2, (product) => validateProduct(product));
     return catalog;
   } catch {
     return null;
@@ -107,7 +104,7 @@ if (await hasCompletionMarker()) {
 }
 
 if (!catalog) {
-  console.log("No complete card store found. Downloading all card data and images from the UNION ARENA official site.");
+  console.log("No complete card store found. Downloading card data from the UNION ARENA official site.");
   console.log("The first startup can take a while. Progress will be shown in these container logs.");
   await runSync();
   catalog = await validateCardStore({ full: true });
